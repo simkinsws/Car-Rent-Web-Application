@@ -23,9 +23,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created By Shameera.A on 3/28/2020
- */
 @Entity
 @Table(name = "car")
 @Audited
@@ -36,7 +33,7 @@ public class Car extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private String serialNumber;
     private String make;

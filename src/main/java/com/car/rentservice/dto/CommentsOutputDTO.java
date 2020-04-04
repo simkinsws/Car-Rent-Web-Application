@@ -5,9 +5,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-/**
- * Created By Shameera.A on 4/2/2020
- */
 @Getter
 @AllArgsConstructor
 public class CommentsOutputDTO {

@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created By Shameera.A on 3/28/2020
- */
 @Slf4j
 @Converter(autoApply = true)
 public class MapConverter implements AttributeConverter<Map<String, String>, String> {

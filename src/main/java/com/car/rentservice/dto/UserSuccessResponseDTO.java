@@ -1,17 +1,11 @@
 package com.car.rentservice.dto;
 
-import com.car.rentservice.modal.Car;
-import com.car.rentservice.modal.Comments;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
-/**
- * Created By Shameera.A on 4/1/2020
- */
 
 @Getter
 @AllArgsConstructor

@@ -19,10 +19,6 @@ import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Created By Shameera.A on 3/29/2020
- */
-
 @Entity
 @Table(name = "reservation")
 @Audited
@@ -33,7 +29,7 @@ public class Reservation extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private String orderNumber;
     private BigDecimal amount;

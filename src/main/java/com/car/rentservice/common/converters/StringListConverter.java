@@ -7,9 +7,6 @@ import javax.persistence.Converter;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created By Shameera.A on 3/28/2020
- */
 @Converter(autoApply = true)
 public class StringListConverter implements AttributeConverter<List<String>, String> {
 

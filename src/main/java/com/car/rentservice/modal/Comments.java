@@ -17,10 +17,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-/**
- * Created By Shameera.A on 3/29/2020
- */
-
 @Entity
 @Table(name = "comments")
 @Audited
@@ -31,7 +27,7 @@ public class Comments extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     @Column(columnDefinition = "TEXT")
     private String post;

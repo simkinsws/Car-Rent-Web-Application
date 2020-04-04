@@ -4,9 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
-/**
- * Created By Shameera.A on 4/4/2020
- */
 @Getter
 public class CommentInputDTO {
 

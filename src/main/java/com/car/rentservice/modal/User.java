@@ -16,10 +16,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;
 
-/**
- * Created By Shameera.A on 3/28/2020
- */
-
 @Entity
 @Table(name = "user")
 @Audited
@@ -30,7 +26,7 @@ public class User extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private Long id;
 
     private String email;
     private String firstName;

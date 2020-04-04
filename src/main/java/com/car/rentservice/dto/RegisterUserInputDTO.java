@@ -7,11 +7,6 @@ import lombok.NonNull;
 
 import javax.validation.constraints.NotBlank;
 
-/**
- * Created By Shameera.A on 4/1/2020
- *
- * */
-
 @Getter
 public class RegisterUserInputDTO {
 

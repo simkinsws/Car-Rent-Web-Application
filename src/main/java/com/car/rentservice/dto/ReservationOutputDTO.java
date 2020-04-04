@@ -6,10 +6,6 @@ import lombok.Getter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-/**
- * Created By Shameera.A on 4/4/2020
- */
-
 @Getter
 @AllArgsConstructor
 public class ReservationOutputDTO {
