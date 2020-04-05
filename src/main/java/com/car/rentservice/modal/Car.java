@@ -9,16 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -58,9 +49,8 @@ public class Car extends Auditable<String> {
     @Column(columnDefinition = "TEXT")
     private String about;
 
-    @Convert(converter = MapConverter.class)
-    @Column(columnDefinition = "TEXT")
-    private Map<String, String> pickUpPlace;
+    @OneToOne
+    private PickUpPlace pickUpPlace;
 
     @Convert(converter = StringListConverter.class)
     @Column(columnDefinition = "TEXT")

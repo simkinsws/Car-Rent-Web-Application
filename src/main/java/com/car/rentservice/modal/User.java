@@ -3,6 +3,7 @@ package com.car.rentservice.modal;
 import com.car.rentservice.audited.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
@@ -20,12 +21,13 @@ import java.util.List;
 @Table(name = "user")
 @Audited
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 public class User extends Auditable<String> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String email;

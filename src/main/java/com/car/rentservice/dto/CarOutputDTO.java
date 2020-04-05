@@ -1,13 +1,15 @@
 package com.car.rentservice.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public class CarOutputDTO {
 
@@ -27,7 +29,7 @@ public class CarOutputDTO {
     private final BigDecimal pricePerDay;
     private final int distanceIncluded;
     private final String about;
-    private final Map<String, String> pickUpPlace;
+    private final PickUpPlaceDTO pickUpPlace;
     private final List<String> imageUrl;
 
     private final List<BookedPeriodsDTO> bookedPeriods;

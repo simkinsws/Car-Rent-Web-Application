@@ -1,11 +1,11 @@
 package com.car.rentservice.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
+@Setter
 @AllArgsConstructor
 public class BookedCarsOutputDTO {
 

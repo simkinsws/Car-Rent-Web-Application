@@ -6,7 +6,6 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @AllArgsConstructor
@@ -28,7 +27,7 @@ public class CarOwnerOutputDTO {
     private final BigDecimal pricePerDay;
     private final int distanceIncluded;
     private final String about;
-    private final Map<String, String> pickUpPlace;
+    private final PickUpPlaceDTO pickUpPlace;
     private final List<String> imageUrl;
 
     private final OwnerOutputDTO owner;
