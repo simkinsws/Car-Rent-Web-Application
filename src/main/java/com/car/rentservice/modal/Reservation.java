@@ -27,25 +27,25 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Reservation extends Auditable<String> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long id;
 
-    private String orderNumber;
-    private BigDecimal amount;
-    private LocalDateTime bookingDate;
+	private String orderNumber;
+	private BigDecimal amount;
+	private LocalDateTime bookingDate;
+	private String confirmationCode;
+	private LocalDateTime startDateTime;
+	private LocalDateTime endDateTime;
 
-    private LocalDateTime startDateTime;
-    private LocalDateTime endDateTime;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	@JsonIgnore
+	private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
+	private String serialNumber;
 
-    private String serialNumber;
-
-    @Builder.Default
-    private boolean paid = false;
+	@Builder.Default
+	private boolean paid = false;
 
 }
