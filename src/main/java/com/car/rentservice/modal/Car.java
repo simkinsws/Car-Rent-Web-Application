@@ -1,18 +1,29 @@
 package com.car.rentservice.modal;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+import org.hibernate.envers.Audited;
+
 import com.car.rentservice.audited.Auditable;
-import com.car.rentservice.common.converters.MapConverter;
 import com.car.rentservice.common.converters.StringListConverter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.envers.Audited;
-
-import javax.persistence.*;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "car")

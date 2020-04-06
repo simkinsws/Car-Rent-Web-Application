@@ -18,46 +18,54 @@ import java.io.IOException;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
-    @Autowired
-    private JwtTokenService jwtTokenService;
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+	@Autowired
+	private JwtTokenService jwtUserDetailsService;
 
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest,
-                                    HttpServletResponse httpServletResponse,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        final String requestTokenHeader = httpServletRequest.getHeader("Authorization");
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+			throws ServletException, IOException {
 
-        String email = null;
-        String jwtToken = null;
-        if(requestTokenHeader != null) {
-            jwtToken = requestTokenHeader;
-            try {
-                email = jwtTokenUtil.getEmailFromToken(jwtToken);
-            } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT Token");
-            } catch (ExpiredJwtException e) {
-                System.out.println("JWT Token has expired");
-            }
-        } else {
-            logger.warn("JWT Token is invalid");
-        }
+		final String requestTokenHeader = request.getHeader("Authorization");
 
-        if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.jwtTokenService.loadUserByUsername(email);
+		String username = null;
+		String jwtToken = null;
+		// JWT Token is in the form "Bearer token". Remove Bearer word and get
+		// only the Token
+		if (requestTokenHeader != null) {
+			jwtToken = requestTokenHeader;
+			try {
+				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+			} catch (IllegalArgumentException e) {
+				System.out.println("Unable to get JWT Token");
+			} catch (ExpiredJwtException e) {
+				System.out.println("JWT Token has expired");
+			}
+		} else {
+			logger.warn("JWT Token is invalid");
+		}
 
-            if(jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                usernamePasswordAuthenticationToken
-                        .setDetails(new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+		// Once we get the token validate it.
+		if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            }
-        }
-        filterChain.doFilter(httpServletRequest,httpServletResponse);
-    }
+			UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+
+			// if token is valid configure Spring Security to manually set
+			// authentication
+			if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+
+				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+						userDetails, null, userDetails.getAuthorities());
+				usernamePasswordAuthenticationToken
+						.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				// After setting the Authentication in the context, we specify
+				// that the current user is authenticated. So it passes the
+				// Spring Security Configurations successfully.
+				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+			}
+		}
+		chain.doFilter(request, response);
+	}
 }

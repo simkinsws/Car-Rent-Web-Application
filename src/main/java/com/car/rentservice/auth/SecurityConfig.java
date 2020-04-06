@@ -3,10 +3,10 @@ package com.car.rentservice.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -21,63 +21,63 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@Order(99)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService jwtUserDetailsService;
 
-    @Autowired
-    private JwtRequestFilter jwtRequestFilter;
+	@Autowired
+	private JwtRequestFilter jwtRequestFilter;
 
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-    }
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		// configure AuthenticationManager so that it knows from where to load
+		// user for matching credentials
+		// Use BCryptPasswordEncoder
+		auth.userDetailsService(jwtUserDetailsService).passwordEncoder(passwordEncoder());
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManager() throws Exception{
-        return super.authenticationManagerBean();
-    }
+	@Bean
+	@Override
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
-    @Bean
-    public CorsFilter corsFilter() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedMethod("OPTIONS");
-        configuration.addAllowedMethod("GET");
-        configuration.addAllowedMethod("POST");
-        configuration.addAllowedMethod("PUT");
-        configuration.addAllowedMethod("DELETE");
-        source.registerCorsConfiguration("/**", configuration);
-        return new org.springframework.web.filter.CorsFilter(source);
-    }
+	@Override
+	protected void configure(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.csrf().disable().authorizeRequests().antMatchers("/login").permitAll()
+				.antMatchers(HttpMethod.OPTIONS).permitAll().antMatchers("/swagger-ui.html").permitAll()
+				.antMatchers("/webjars/**", "/swagger-resources/**", "/v2/api-docs", "/configuration/ui",
+						"/configuration/security")
+				.permitAll().antMatchers("/registration", "/search/**").permitAll().anyRequest().authenticated().and()
+				.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-    @Override
-    protected void configure(HttpSecurity httpSecurity) throws Exception{
-        httpSecurity.csrf().disable()
-                .authorizeRequests().antMatchers("/login").permitAll()
-                .antMatchers(HttpMethod.OPTIONS)
-                .permitAll().antMatchers("/swagger-ui.html").permitAll()
-                .antMatchers("/webjars/**","/swagger-resources/**", "/v2/api-docs", "/configuration/ui", "/configuration/security")
-                .permitAll()
-                .antMatchers("/registration", "/search/**").permitAll()
-                .anyRequest().authenticated().and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		// Add a filter to validate the tokens with every request
+		httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+	}
 
-        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-    }
+	@Bean
+	public CorsFilter corsFilter() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.setAllowCredentials(true);
+		configuration.addAllowedOrigin("*");
+		configuration.addAllowedHeader("*");
+		configuration.addAllowedMethod("OPTIONS");
+		configuration.addAllowedMethod("GET");
+		configuration.addAllowedMethod("POST");
+		configuration.addAllowedMethod("PUT");
+		configuration.addAllowedMethod("DELETE");
+		source.registerCorsConfiguration("/**", configuration);
+		return new org.springframework.web.filter.CorsFilter(source);
+	}
 }
