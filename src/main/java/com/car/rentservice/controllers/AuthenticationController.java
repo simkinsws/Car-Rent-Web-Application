@@ -58,13 +58,13 @@ public class AuthenticationController {
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
 		JwtResponse response = null;
+		String status;
 		if (token != null && !token.isEmpty()) {
-			String status = "true";
-			response = new JwtResponse(token, status);
+			status = "true";
 		} else {
-			String status = "false";
-			response = new JwtResponse(token, status);
+			status = "false";
 		}
+		response = new JwtResponse(token, status);
 		return ResponseEntity.ok(response);
 	}
 

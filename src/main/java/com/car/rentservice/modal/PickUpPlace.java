@@ -6,11 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -22,8 +18,9 @@ import java.math.BigDecimal;
 public class PickUpPlace extends Auditable<String> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "placeSequence")
+    @SequenceGenerator(name = "placeSequence", sequenceName = "PLACE_SEQ", allocationSize = 1)
+    private Long id;
 
     private String placeId;
     private String placeName;

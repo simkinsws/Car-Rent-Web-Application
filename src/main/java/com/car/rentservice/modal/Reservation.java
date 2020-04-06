@@ -8,14 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -27,8 +20,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Reservation extends Auditable<String> {
 
+	/*
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reservationSequence")
+//	@SequenceGenerator(name = "reservationSequence", sequenceName = "RESERVATION_SEQ", allocationSize = 1)
+*/
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reservationSequence")
+	@SequenceGenerator(name = "reservationSequence", sequenceName = "RESERVATION_SEQ", allocationSize = 1)
 	private Long id;
 
 	private String orderNumber;

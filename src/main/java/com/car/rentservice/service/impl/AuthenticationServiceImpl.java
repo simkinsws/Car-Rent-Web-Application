@@ -38,6 +38,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 	@Override
 	@Transactional
 	public UserSuccessResponseDTO register(RegisterUserInputDTO registerUserInputDTO) {
+		if(userRepository.findByEmail(registerUserInputDTO.getEmail()) != null) {
+			System.out.println("Error will come later.");
+			return null;
+		}
+
 		User newUser = new User();
 		newUser.setEmail(registerUserInputDTO.getEmail());
 		newUser.setFirstName(registerUserInputDTO.getFirstName());
