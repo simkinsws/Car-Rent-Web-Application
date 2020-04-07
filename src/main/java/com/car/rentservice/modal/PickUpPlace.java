@@ -3,6 +3,7 @@ package com.car.rentservice.modal;
 import com.car.rentservice.audited.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
@@ -13,6 +14,7 @@ import java.math.BigDecimal;
 @Table(name = "pickup_place")
 @Audited
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 public class PickUpPlace extends Auditable<String> {

@@ -18,7 +18,7 @@ public class JwtTokenService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
+        User user = userRepository.findByEmail(email).orElse(null);
         if(user.getEmail().equals(email)) {
             return new org.springframework.security.core.userdetails.User(email, user.getPassword(), new ArrayList<>());
         } else {

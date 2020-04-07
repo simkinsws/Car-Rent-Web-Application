@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import lombok.AllArgsConstructor;
+import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 import com.car.rentservice.audited.Auditable;
@@ -19,6 +21,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "car")
 @Audited
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 public class Car extends Auditable<String> {

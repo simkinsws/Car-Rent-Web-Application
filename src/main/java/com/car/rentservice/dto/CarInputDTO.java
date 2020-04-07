@@ -1,5 +1,6 @@
 package com.car.rentservice.dto;
 
+import com.car.rentservice.modal.PickUpPlace;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
@@ -27,9 +28,9 @@ public class CarInputDTO {
     private final BigDecimal pricePerDay;
     private final int distanceIncluded;
     private final String about;
-    private final Map<String, String> pickUpPlace;
+    private final PickUpPlaceDTO pickUpPlace;
     private final List<String> imageUrl;
-    private final long userId;
+    private final Long userId;
 
     @JsonCreator
     public CarInputDTO(@JsonProperty("serialNumber") String serialNumber, @JsonProperty("make") String make, @JsonProperty("modal") String modal,
@@ -37,7 +38,7 @@ public class CarInputDTO {
                        @JsonProperty("gear") String gear, @JsonProperty("wheelsDrive") String wheelsDrive, @JsonProperty("doors") int doors,
                        @JsonProperty("seats") int seats, @JsonProperty("fuelConsumption") BigDecimal fuelConsumption, @JsonProperty("features") List<String> features,
                        @JsonProperty("carClass") String carClass, @JsonProperty("pricePerDay") BigDecimal pricePerDay, @JsonProperty("distanceIncluded") int distanceIncluded,
-                       @JsonProperty("about") String about, @JsonProperty("pickUpPlace") Map<String, String> pickUpPlace, @JsonProperty("imageUrl") List<String> imageUrl,
+                       @JsonProperty("about") String about, @JsonProperty("pickUpPlace") PickUpPlaceDTO pickUpPlace, @JsonProperty("imageUrl") List<String> imageUrl,
                        @JsonProperty("userId") long userId) {
         this.serialNumber = serialNumber;
         this.make = make;
