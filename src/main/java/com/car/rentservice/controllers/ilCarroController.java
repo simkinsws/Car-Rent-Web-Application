@@ -35,6 +35,7 @@ public class ilCarroController {
 			responseModel.setDataList(null);
 		} catch (Exception e) {
 			responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
+			e.printStackTrace();
 			responseModel.setMessage("Unable to delete: " + e.getMessage());
 			responseModel.setDataList(new ArrayList<Object>(Arrays.asList(data)));
 		}
