@@ -4,6 +4,7 @@ import com.car.rentservice.audited.Auditable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Table(name = "comments")
 @Audited
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 public class Comments extends Auditable<String> {

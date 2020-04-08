@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.envers.Audited;
 
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "reservation")
 @Audited
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 public class Reservation extends Auditable<String> {

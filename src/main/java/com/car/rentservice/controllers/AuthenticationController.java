@@ -49,16 +49,11 @@ public class AuthenticationController {
 		UserSuccessResponseDTO userSuccessResponseDTO = null;
 		try {
 			userSuccessResponseDTO = authenticationService.register(registerUserInputDTO);
-			if (userSuccessResponseDTO == null) {
-				responseModel.setStatus(Constants.CONFLICT_CODE);
-				responseModel.setMessage("Got the null user: " + userSuccessResponseDTO);
-			} else {
-				responseModel.setStatus(Constants.SUCCESS_CODE);
-				responseModel.setMessage("Got the user: " + userSuccessResponseDTO.getFirstName());
-			}
+			responseModel.setStatus(Constants.SUCCESS_CODE);
+			responseModel.setMessage("Got the user: " + userSuccessResponseDTO.getFirstName());
 		} catch (Exception e) {
 			responseModel.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
-			responseModel.setMessage("Unable to create user: " + e.getMessage());
+			responseModel.setMessage("User already exists.");
 		}
 
 		dataList.add(userSuccessResponseDTO);

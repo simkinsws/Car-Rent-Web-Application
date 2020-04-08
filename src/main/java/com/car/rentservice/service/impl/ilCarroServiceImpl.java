@@ -82,6 +82,7 @@ public class ilCarroServiceImpl implements ilCarroService {
 					System.out.println("Comment id :" + comment.getId() + " is deleted");
 				}
 			}
+
 			userRepository.delete(user);
 		}
 		return "User deleted";
@@ -121,7 +122,6 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 		carRepository.save(car);
 
-		user.getCars().add(car);
 		userRepository.save(user);
 		return toCarOwnerDto(car);
 	}
@@ -130,10 +130,9 @@ public class ilCarroServiceImpl implements ilCarroService {
 	@Transactional
 	public String deleteCar(String email, String serialNumber) {
 		User user = userRepository.findByEmail(email);
-		Car car = carRepository.findBySerialNumber(serialNumber).orElse(null);
-		carRepository.delete(car);
-		user.getCars().remove(car);
-		userRepository.save(user);
+		if(user == null) {
+			return null;
+		}
 		return "Car Removed";
 	}
 
