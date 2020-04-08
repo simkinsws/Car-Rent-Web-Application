@@ -1,11 +1,10 @@
 package com.car.rentservice.controllers;
 
-import com.car.rentservice.auth.JwtTokenUtil;
-import com.car.rentservice.constants.Constants;
-import com.car.rentservice.dto.*;
-import com.car.rentservice.service.AuthenticationService;
-import com.car.rentservice.service.JwtTokenService;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -17,8 +16,15 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.car.rentservice.auth.JwtTokenUtil;
+import com.car.rentservice.constants.Constants;
+import com.car.rentservice.dto.JwtRequest;
+import com.car.rentservice.dto.JwtResponse;
+import com.car.rentservice.dto.RegisterUserInputDTO;
+import com.car.rentservice.dto.ResponseModel;
+import com.car.rentservice.dto.UserSuccessResponseDTO;
+import com.car.rentservice.service.AuthenticationService;
+import com.car.rentservice.service.JwtTokenService;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -40,12 +46,21 @@ public class AuthenticationController {
 	public ResponseModel register(@RequestBody RegisterUserInputDTO registerUserInputDTO) {
 		ResponseModel responseModel = new ResponseModel();
 		List<Object> dataList = new ArrayList<>();
-		UserSuccessResponseDTO userSuccessResponseDTO = authenticationService.register(registerUserInputDTO);
-		if (userSuccessResponseDTO == null) {
-			responseModel.setStatus(Constants.CONFLICT_CODE);
-		} else {
-			responseModel.setStatus(Constants.SUCCESS_CODE);
+		UserSuccessResponseDTO userSuccessResponseDTO = null;
+		try {
+			userSuccessResponseDTO = authenticationService.register(registerUserInputDTO);
+			if (userSuccessResponseDTO == null) {
+				responseModel.setStatus(Constants.CONFLICT_CODE);
+				responseModel.setMessage("Got the null user: " + userSuccessResponseDTO);
+			} else {
+				responseModel.setStatus(Constants.SUCCESS_CODE);
+				responseModel.setMessage("Got the user: " + userSuccessResponseDTO.getFirstName());
+			}
+		} catch (Exception e) {
+			responseModel.setStatus(HttpStatus.EXPECTATION_FAILED.toString());
+			responseModel.setMessage("Unable to create user: " + e.getMessage());
 		}
+
 		dataList.add(userSuccessResponseDTO);
 		responseModel.setDataList(dataList);
 		return responseModel;

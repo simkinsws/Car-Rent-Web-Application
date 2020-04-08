@@ -6,11 +6,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseModel {
-    private String status;
-    private List<Object> dataList;
+	private String status;
+	private String message;
+	private List<Object> dataList;
 }

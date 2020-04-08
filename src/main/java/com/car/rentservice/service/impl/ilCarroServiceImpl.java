@@ -1,19 +1,34 @@
 package com.car.rentservice.service.impl;
 
-import com.car.rentservice.dto.*;
-import com.car.rentservice.modal.*;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.car.rentservice.dto.BookedCarsOutputDTO;
+import com.car.rentservice.dto.BookedPeriodDTO;
+import com.car.rentservice.dto.BookedPeriodsDTO;
+import com.car.rentservice.dto.BookedPersonOutputDTO;
+import com.car.rentservice.dto.CarInputDTO;
+import com.car.rentservice.dto.CarOutputDTO;
+import com.car.rentservice.dto.CarOwnerOutputDTO;
+import com.car.rentservice.dto.CommentsOutputDTO;
+import com.car.rentservice.dto.OwnerOutputDTO;
+import com.car.rentservice.dto.PickUpPlaceDTO;
+import com.car.rentservice.dto.UpdateUserInputDTO;
+import com.car.rentservice.dto.UserSuccessResponseDTO;
+import com.car.rentservice.modal.Car;
+import com.car.rentservice.modal.Comments;
+import com.car.rentservice.modal.PickUpPlace;
+import com.car.rentservice.modal.Reservation;
+import com.car.rentservice.modal.User;
 import com.car.rentservice.repositories.CarRepository;
+import com.car.rentservice.repositories.CommentRepository;
 import com.car.rentservice.repositories.PickUpPlaceRepository;
 import com.car.rentservice.repositories.UserRepository;
 import com.car.rentservice.service.ilCarroService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ilCarroServiceImpl implements ilCarroService {
@@ -26,12 +41,16 @@ public class ilCarroServiceImpl implements ilCarroService {
 	@Autowired
 	private PickUpPlaceRepository pickUpPlaceRepository;
 
+	@Autowired
+	private CommentRepository commentRepository;
+
 	@Override
 	@Transactional
 	public UserSuccessResponseDTO updateUser(String email, UpdateUserInputDTO updateUserInputDTO) {
-		User user = userRepository.findByEmail(email).orElseThrow(() -> new ResponseStatusException(
-				HttpStatus.NOT_FOUND,"User not found."
-		));
+		User user = userRepository.findByEmail(email);
+		if (user == null) {
+			return null;
+		}
 		user.setFirstName(updateUserInputDTO.getFirstName());
 		user.setSecondName(updateUserInputDTO.getSecondName());
 		user.setPhone(updateUserInputDTO.getPhone());
@@ -44,7 +63,27 @@ public class ilCarroServiceImpl implements ilCarroService {
 	@Override
 	@Transactional
 	public String deleteUser(String email) {
-		userRepository.delete(userRepository.findByEmail(email).orElse(null));
+		User user = userRepository.findByEmail(email);
+		if (user == null) {
+			return "User not found";
+		} else {
+			List<Car> cars = carRepository.findByUserId(user.getId());
+			if (cars != null && !cars.isEmpty()) {
+				for (Car car : cars) {
+					carRepository.delete(car);
+					System.out.println("Car id :" + car.getId() + " is deleted");
+				}
+			}
+
+			List<Comments> comments = commentRepository.findByUserId(user.getId());
+			if (comments != null && !comments.isEmpty()) {
+				for (Comments comment : comments) {
+					commentRepository.delete(comment);
+					System.out.println("Comment id :" + comment.getId() + " is deleted");
+				}
+			}
+			userRepository.delete(user);
+		}
 		return "User deleted";
 	}
 
@@ -90,7 +129,7 @@ public class ilCarroServiceImpl implements ilCarroService {
 	@Override
 	@Transactional
 	public String deleteCar(String email, String serialNumber) {
-		User user = userRepository.findByEmail(email).orElse(null);
+		User user = userRepository.findByEmail(email);
 		Car car = carRepository.findBySerialNumber(serialNumber).orElse(null);
 		carRepository.delete(car);
 		user.getCars().remove(car);
@@ -99,13 +138,14 @@ public class ilCarroServiceImpl implements ilCarroService {
 	}
 
 	private CarOwnerOutputDTO toCarOwnerDto(Car car) {
-		return new CarOwnerOutputDTO(car.getSerialNumber(),car.getMake(),car.getModal(),car.getYear(),car.getEngine()
-		,car.getFuel(),car.getGear(),car.getWheelsDrive(),car.getDoors(),car.getSeats(),car.getFuelConsumption(),
-				car.getFeatures(),car.getCarClass(),car.getPricePerDay(),car.getDistanceIncluded(),car.getAbout()
-		,toPickUpPlaceDto(car.getPickUpPlace()),car.getImageUrl(),new OwnerOutputDTO(car.getUser().getFirstName()
-		,car.getUser().getSecondName(),car.getUser().getCreatedAt()),toBookedListPeriodsDto(car.getUser().getReservations()));
+		return new CarOwnerOutputDTO(car.getSerialNumber(), car.getMake(), car.getModal(), car.getYear(),
+				car.getEngine(), car.getFuel(), car.getGear(), car.getWheelsDrive(), car.getDoors(), car.getSeats(),
+				car.getFuelConsumption(), car.getFeatures(), car.getCarClass(), car.getPricePerDay(),
+				car.getDistanceIncluded(), car.getAbout(), toPickUpPlaceDto(car.getPickUpPlace()), car.getImageUrl(),
+				new OwnerOutputDTO(car.getUser().getFirstName(), car.getUser().getSecondName(),
+						car.getUser().getCreatedAt()),
+				toBookedListPeriodsDto(car.getUser().getReservations()));
 	}
-
 
 	private UserSuccessResponseDTO toUserSuccessResponseDto(User newUser) {
 		return new UserSuccessResponseDTO(newUser.getFirstName(), newUser.getSecondName(), newUser.getCreatedAt(),

@@ -13,16 +13,16 @@ import com.car.rentservice.repositories.UserRepository;
 
 @Service
 public class JwtTokenService implements UserDetailsService {
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email).orElse(null);
-        if(user.getEmail().equals(email)) {
-            return new org.springframework.security.core.userdetails.User(email, user.getPassword(), new ArrayList<>());
-        } else {
-            throw new UsernameNotFoundException("User not found with email: " + email);
-        }
-    }
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		User user = userRepository.findByEmail(email);
+		if (user.getEmail().equals(email)) {
+			return new org.springframework.security.core.userdetails.User(email, user.getPassword(), new ArrayList<>());
+		} else {
+			throw new UsernameNotFoundException("User not found with email: " + email);
+		}
+	}
 }
