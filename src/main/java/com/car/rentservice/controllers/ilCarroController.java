@@ -60,13 +60,21 @@ public class ilCarroController {
 	@PostMapping("/car")
 	public ResponseModel addCar(Authentication authentication, @RequestBody CarInputDTO carInputDTO) {
 		ResponseModel responseModel = new ResponseModel();
-		CarOwnerOutputDTO car = ilCarroService.addCar(authentication.getName(), carInputDTO);
-		if (car == null) {
-			responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
+		if (carInputDTO != null && carInputDTO.getSerialNumber().length() >= 7
+				&& carInputDTO.getSerialNumber().length() <= 8) {
+			CarOwnerOutputDTO car = ilCarroService.addCar(authentication.getName(), carInputDTO);
+			if (car == null) {
+				responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
+			} else {
+				responseModel.setStatus(HttpStatus.OK.toString());
+				responseModel.setDataList(new ArrayList<>(Arrays.asList(car)));
+			}
 		} else {
-			responseModel.setStatus(HttpStatus.OK.toString());
-			responseModel.setDataList(new ArrayList<>(Arrays.asList(car)));
+			responseModel.setStatus(HttpStatus.CONFLICT.toString());
+			responseModel.setMessage("Enter valid serial number ");
+			responseModel.setDataList(null);
 		}
+
 		return responseModel;
 	}
 

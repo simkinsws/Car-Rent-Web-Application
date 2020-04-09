@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.envers.Audited;
 
@@ -28,6 +29,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
+//@Table(name = "car", uniqueConstraints = @UniqueConstraint(columnNames = { "serialNumber" }))
 @Table(name = "car")
 @Audited
 @Getter
@@ -36,43 +38,43 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class Car extends Auditable<String> {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "carSequence")
-    @SequenceGenerator(name = "carSequence", sequenceName = "CAR_SEQ", allocationSize = 1)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "carSequence")
+	@SequenceGenerator(name = "carSequence", sequenceName = "CAR_SEQ", allocationSize = 1)
+	private Long id;
+	@Column(unique = true)
+	private String serialNumber;
+	private String make;
+	private String modal;
+	private String year;
+	private String engine;
+	private String fuel;
+	private String gear;
+	private String wheelsDrive;
+	private int doors;
+	private int seats;
+	private BigDecimal fuelConsumption;
 
-    private String serialNumber;
-    private String make;
-    private String modal;
-    private String year;
-    private String engine;
-    private String fuel;
-    private String gear;
-    private String wheelsDrive;
-    private int doors;
-    private int seats;
-    private BigDecimal fuelConsumption;
+	@Convert(converter = StringListConverter.class)
+	@Column(columnDefinition = "TEXT")
+	private List<String> features;
 
-    @Convert(converter = StringListConverter.class)
-    @Column(columnDefinition = "TEXT")
-    private List<String> features;
+	private String carClass;
+	private BigDecimal pricePerDay;
+	private int distanceIncluded;
 
-    private String carClass;
-    private BigDecimal pricePerDay;
-    private int distanceIncluded;
+	@Column(columnDefinition = "TEXT")
+	private String about;
 
-    @Column(columnDefinition = "TEXT")
-    private String about;
+	@OneToOne
+	private PickUpPlace pickUpPlace;
 
-    @OneToOne
-    private PickUpPlace pickUpPlace;
+	@Convert(converter = StringListConverter.class)
+	@Column(columnDefinition = "TEXT")
+	private List<String> imageUrl;
 
-    @Convert(converter = StringListConverter.class)
-    @Column(columnDefinition = "TEXT")
-    private List<String> imageUrl;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	@JsonIgnore
+	private User user;
 }

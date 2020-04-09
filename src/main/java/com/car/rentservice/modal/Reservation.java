@@ -23,9 +23,10 @@ import java.time.LocalDateTime;
 public class Reservation extends Auditable<String> {
 
 	/*
-//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reservationSequence")
-//	@SequenceGenerator(name = "reservationSequence", sequenceName = "RESERVATION_SEQ", allocationSize = 1)
-*/
+	 * // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
+	 * "reservationSequence") // @SequenceGenerator(name = "reservationSequence",
+	 * sequenceName = "RESERVATION_SEQ", allocationSize = 1)
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reservationSequence")
 	@SequenceGenerator(name = "reservationSequence", sequenceName = "RESERVATION_SEQ", allocationSize = 1)
@@ -43,6 +44,8 @@ public class Reservation extends Auditable<String> {
 	@JsonIgnore
 	private User user;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "serial_number")
 	private String serialNumber;
 
 	@Builder.Default

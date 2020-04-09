@@ -92,7 +92,7 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
         carRepository.save(car1);
         Car car2 = new Car();
 
-        car2.setSerialNumber("1234567");
+		car2.setSerialNumber("1234568");
         car2.setMake("Mercedes");
         car2.setModal("Mercedes benz");
         car2.setYear("2002");
