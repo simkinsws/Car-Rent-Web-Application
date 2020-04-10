@@ -44,8 +44,6 @@ public class Reservation extends Auditable<String> {
 	@JsonIgnore
 	private User user;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "serial_number")
 	private String serialNumber;
 
 	@Builder.Default

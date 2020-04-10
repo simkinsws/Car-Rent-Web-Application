@@ -1,13 +1,12 @@
 package com.car.rentservice.dto;
 
-import com.car.rentservice.modal.PickUpPlace;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.Getter;
 
 @Getter
 public class CarInputDTO {

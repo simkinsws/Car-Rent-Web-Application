@@ -78,17 +78,42 @@ public class ilCarroController {
 		return responseModel;
 	}
 
+	@PutMapping("/car/update/{serialNumber}")
+	public ResponseModel updateCar(Authentication authentication, @PathVariable String serialNumber,
+			@RequestBody CarInputDTO carInputDTO) {
+		ResponseModel responseModel = new ResponseModel();
+		try {
+			responseModel = ilCarroService.updateCar(authentication.getName(), serialNumber, carInputDTO);
+
+		} catch (Exception e) {
+			responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
+			responseModel.setMessage("Unexpected exception occurs: " + e.getMessage());
+			responseModel.setDataList(null);
+		}
+		return responseModel;
+	}
+
 	@DeleteMapping("/car/delete/{serialNumber}")
 	public ResponseModel deleteCar(Authentication authentication, @PathVariable String serialNumber) {
 		ResponseModel responseModel = new ResponseModel();
 		String data = null;
 		try {
 			data = ilCarroService.deleteCar(authentication.getName(), serialNumber);
-			responseModel.setStatus(HttpStatus.OK.toString());
-			responseModel.setDataList(null);
+			if (data == null) {
+				responseModel.setStatus(HttpStatus.CONFLICT.toString());
+				responseModel.setMessage("Car with Serial Number" + serialNumber
+						+ " cannot be deleted, as it is reserved with order number");
+				responseModel.setDataList(null);
+
+			} else {
+				responseModel.setStatus(HttpStatus.OK.toString());
+				responseModel.setMessage(data);
+				responseModel.setDataList(null);
+			}
 		} catch (Exception e) {
 			responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
-			responseModel.setDataList(new ArrayList<Object>(Arrays.asList(data)));
+			responseModel.setMessage(data);
+			responseModel.setDataList(null);
 		}
 		return responseModel;
 	}

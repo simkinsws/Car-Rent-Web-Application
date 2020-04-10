@@ -56,6 +56,18 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
         newUser.setComments(new ArrayList<>());
         newUser.setReservations(new ArrayList<>());
         userRepository.save(newUser);
+        
+        User newUser2 = new User();
+        newUser2.setEmail("nir.simkin2@gmail.com");
+        newUser2.setFirstName("nir2");
+        newUser2.setSecondName("simkin2");
+        newUser2.setPhotoUrl("img2.com");
+        newUser2.setPhone("05240702152");
+        newUser2.setPassword(bCryptEncoder.encode("12345"));
+        newUser2.setCars(new ArrayList<>());
+        newUser2.setComments(new ArrayList<>());
+        newUser2.setReservations(new ArrayList<>());
+        userRepository.save(newUser2);
 
         PickUpPlace pickUpPlace = new PickUpPlace();
         pickUpPlace.setPlaceId("123");
@@ -117,9 +129,10 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
         reservation1.setAmount(new BigDecimal(123.5));
         reservation1.setBookingDate(LocalDateTime.now());
         reservation1.setStartDateTime(LocalDateTime.now());
-        reservation1.setEndDateTime(LocalDateTime.now().plusDays(1));
+        reservation1.setEndDateTime(LocalDateTime.now());
         reservation1.setOrderNumber("1");
         reservation1.setConfirmationCode("c234512");
+        reservation1.setSerialNumber("1234567");
         reservation1.setUser(newUser);
         reservationRepository.save(reservation1);
         Reservation reservation2 = new Reservation();
@@ -127,6 +140,7 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
         reservation2.setBookingDate(LocalDateTime.now());
         reservation2.setStartDateTime(LocalDateTime.now());
         reservation2.setEndDateTime(LocalDateTime.now().plusDays(1));
+        reservation2.setSerialNumber("1234568");
         reservation2.setOrderNumber("1");
         reservation2.setConfirmationCode("c234513");
         reservation2.setUser(newUser);

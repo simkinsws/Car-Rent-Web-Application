@@ -1,9 +1,13 @@
 package com.car.rentservice.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +21,7 @@ import com.car.rentservice.dto.CarOwnerOutputDTO;
 import com.car.rentservice.dto.CommentsOutputDTO;
 import com.car.rentservice.dto.OwnerOutputDTO;
 import com.car.rentservice.dto.PickUpPlaceDTO;
+import com.car.rentservice.dto.ResponseModel;
 import com.car.rentservice.dto.UpdateUserInputDTO;
 import com.car.rentservice.dto.UserSuccessResponseDTO;
 import com.car.rentservice.modal.Car;
@@ -27,6 +32,7 @@ import com.car.rentservice.modal.User;
 import com.car.rentservice.repositories.CarRepository;
 import com.car.rentservice.repositories.CommentRepository;
 import com.car.rentservice.repositories.PickUpPlaceRepository;
+import com.car.rentservice.repositories.ReservationRepository;
 import com.car.rentservice.repositories.UserRepository;
 import com.car.rentservice.service.ilCarroService;
 
@@ -43,6 +49,9 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 	@Autowired
 	private CommentRepository commentRepository;
+
+	@Autowired
+	private ReservationRepository reservationRepository;
 
 	@Override
 	@Transactional
@@ -127,13 +136,80 @@ public class ilCarroServiceImpl implements ilCarroService {
 	}
 
 	@Override
+	public ResponseModel updateCar(String email, String serialNumber, CarInputDTO carInputDTO) {
+
+		ResponseModel responseModel = new ResponseModel();
+		User user = userRepository.findByEmail(email);
+		Car car = carRepository.findBySerialNumber(serialNumber);
+		// Checking if new serial number is exists for aother car or not
+		Car updatedCar = carRepository.findBySerialNumber(carInputDTO.getSerialNumber());
+		if (updatedCar != null && car.getId() != updatedCar.getId()) {
+			responseModel.setStatus(HttpStatus.CONFLICT.toString());
+			responseModel.setMessage("Serial Number is already");
+			responseModel.setDataList(null);
+			return responseModel;
+		} else {
+			if (car.getUser().getId() == user.getId()) {
+				PickUpPlace pickUpPlace = new PickUpPlace();
+				pickUpPlace.setPlaceId(carInputDTO.getPickUpPlace().getPlaceId());
+				pickUpPlace.setPlaceName(carInputDTO.getPickUpPlace().getPlaceName());
+				pickUpPlace.setLatitude(carInputDTO.getPickUpPlace().getLatitude());
+				pickUpPlace.setLongitude(carInputDTO.getPickUpPlace().getLongitude());
+				pickUpPlaceRepository.save(pickUpPlace);
+
+				car.setSerialNumber(carInputDTO.getSerialNumber());
+				car.setMake(carInputDTO.getMake());
+				car.setModal(carInputDTO.getModal());
+				car.setYear(carInputDTO.getYear());
+				car.setEngine(carInputDTO.getEngine());
+				car.setFuel(carInputDTO.getFuel());
+				car.setGear(carInputDTO.getGear());
+				car.setWheelsDrive(carInputDTO.getWheelsDrive());
+				car.setDoors(carInputDTO.getDoors());
+				car.setSeats(carInputDTO.getSeats());
+				car.setFuelConsumption(carInputDTO.getFuelConsumption());
+				car.setFeatures(carInputDTO.getFeatures());
+				car.setPricePerDay(carInputDTO.getPricePerDay());
+				car.setDistanceIncluded(carInputDTO.getDistanceIncluded());
+				car.setAbout(carInputDTO.getAbout());
+				car.setPickUpPlace(pickUpPlace);
+				car.setImageUrl(carInputDTO.getImageUrl());
+				car.setUser(user);
+				carRepository.save(car);
+				responseModel.setStatus(HttpStatus.OK.toString());
+				responseModel.setMessage("Car has been updated");
+				responseModel.setDataList(new ArrayList<Object>(Arrays.asList(car)));
+				return responseModel;
+			} else {
+				responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
+				responseModel.setMessage("You are not authorized");
+				responseModel.setDataList(null);
+				return responseModel;
+			}
+		}
+	}
+
+	@Override
 	@Transactional
 	public String deleteCar(String email, String serialNumber) {
 		User user = userRepository.findByEmail(email);
-		if(user == null) {
-			return null;
+		List<Reservation> reservationList = reservationRepository.findBySerialNumber(serialNumber);
+		for (Reservation reservation : reservationList) {
+			if (LocalDateTime.now().isBefore(reservation.getEndDateTime())) {
+				return null;
+			}
+		}
+		Car car = carRepository.findBySerialNumber(serialNumber);
+		if (car.getUser().getId() == user.getId()) {
+			deleteCar(car);
+		} else {
+			return "User is Unathorized to delete the Car";
 		}
 		return "Car Removed";
+	}
+
+	private void deleteCar(Car car) {
+		carRepository.delete(car);
 	}
 
 	private CarOwnerOutputDTO toCarOwnerDto(Car car) {
