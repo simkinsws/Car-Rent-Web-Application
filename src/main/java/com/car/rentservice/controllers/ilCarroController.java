@@ -98,18 +98,7 @@ public class ilCarroController {
 		ResponseModel responseModel = new ResponseModel();
 		String data = null;
 		try {
-			data = ilCarroService.deleteCar(authentication.getName(), serialNumber);
-			if (data == null) {
-				responseModel.setStatus(HttpStatus.CONFLICT.toString());
-				responseModel.setMessage("Car with Serial Number" + serialNumber
-						+ " cannot be deleted, as it is reserved with order number");
-				responseModel.setDataList(null);
-
-			} else {
-				responseModel.setStatus(HttpStatus.OK.toString());
-				responseModel.setMessage(data);
-				responseModel.setDataList(null);
-			}
+			responseModel = ilCarroService.deleteCar(authentication.getName(), serialNumber);
 		} catch (Exception e) {
 			responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
 			responseModel.setMessage(data);

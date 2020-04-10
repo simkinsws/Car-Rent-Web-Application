@@ -79,7 +79,7 @@ public class ilCarroServiceImpl implements ilCarroService {
 			List<Car> cars = carRepository.findByUserId(user.getId());
 			if (cars != null && !cars.isEmpty()) {
 				for (Car car : cars) {
-					carRepository.delete(car);
+					deleteCar(car);
 					System.out.println("Car id :" + car.getId() + " is deleted");
 				}
 			}
@@ -141,7 +141,7 @@ public class ilCarroServiceImpl implements ilCarroService {
 		ResponseModel responseModel = new ResponseModel();
 		User user = userRepository.findByEmail(email);
 		Car car = carRepository.findBySerialNumber(serialNumber);
-		// Checking if new serial number is exists for aother car or not
+		// Checking if new serial number is exists for another car or not
 		Car updatedCar = carRepository.findBySerialNumber(carInputDTO.getSerialNumber());
 		if (updatedCar != null && car.getId() != updatedCar.getId()) {
 			responseModel.setStatus(HttpStatus.CONFLICT.toString());
@@ -191,25 +191,35 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 	@Override
 	@Transactional
-	public String deleteCar(String email, String serialNumber) {
+	public ResponseModel deleteCar(String email, String serialNumber) {
+		ResponseModel responseModel = new ResponseModel();
 		User user = userRepository.findByEmail(email);
 		List<Reservation> reservationList = reservationRepository.findBySerialNumber(serialNumber);
 		for (Reservation reservation : reservationList) {
 			if (LocalDateTime.now().isBefore(reservation.getEndDateTime())) {
+				responseModel.setStatus(HttpStatus.CONFLICT.toString());
+				responseModel.setMessage(
+						"Car with Serial Number" + serialNumber + "cannot be deleted, as it is already reserved");
 				return null;
 			}
 		}
 		Car car = carRepository.findBySerialNumber(serialNumber);
 		if (car.getUser().getId() == user.getId()) {
 			deleteCar(car);
+			responseModel.setStatus(HttpStatus.OK.toString());
+			responseModel.setMessage("Car with pickup place is deleted");
+			return responseModel;
 		} else {
-			return "User is Unathorized to delete the Car";
+			responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
+			responseModel.setMessage("You are not authorized");
+			return responseModel;
 		}
-		return "Car Removed";
 	}
 
 	private void deleteCar(Car car) {
+		PickUpPlace pickUpPlace = car.getPickUpPlace();
 		carRepository.delete(car);
+		pickUpPlaceRepository.delete(pickUpPlace);
 	}
 
 	private CarOwnerOutputDTO toCarOwnerDto(Car car) {

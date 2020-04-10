@@ -9,7 +9,7 @@ public interface ilCarroService {
 
 	CarOwnerOutputDTO addCar(String email, CarInputDTO carInputDTO);
 
-	String deleteCar(String email, String serialNumber);
+	ResponseModel deleteCar(String email, String serialNumber);
 
 	ResponseModel updateCar(String email, String serialNumber, CarInputDTO carInputDTO);
 }
