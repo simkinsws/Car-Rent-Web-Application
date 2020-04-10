@@ -178,7 +178,7 @@ public class ilCarroServiceImpl implements ilCarroService {
 				carRepository.save(car);
 				responseModel.setStatus(HttpStatus.OK.toString());
 				responseModel.setMessage("Car has been updated");
-				responseModel.setDataList(new ArrayList<Object>(Arrays.asList(car)));
+				responseModel.setDataList(new ArrayList<Object>(Arrays.asList(toCarOwnerDto(car))));
 				return responseModel;
 			} else {
 				responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
