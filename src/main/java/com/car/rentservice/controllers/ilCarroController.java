@@ -79,4 +79,14 @@ public class ilCarroController {
 		return ilCarroService.addComment(authentication.getName(), serialNumber, commentInputDTO);
 	}
 
+	@GetMapping("comment/{serialNumber}")
+	public ResponseModel getLastThreeCommentsBySerialNumber(@PathVariable String serialNumber) {
+		return ilCarroService.getThreeLastCommentsOfCarBySerialNumber(serialNumber);
+	}
+
+	@GetMapping("car/best")
+	public ResponseModel getBestCars() {
+		return ilCarroService.getBestBooked();
+	}
+
 }

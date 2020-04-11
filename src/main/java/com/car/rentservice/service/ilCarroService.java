@@ -24,4 +24,8 @@ public interface ilCarroService {
 	ResponseModel getLatestComments();
 
 	ResponseModel addComment(String email,String serialNumber, CommentInputDTO commentInputDTO);
+
+	ResponseModel getThreeLastCommentsOfCarBySerialNumber(String serialNumber);
+
+	ResponseModel getBestBooked();
 }

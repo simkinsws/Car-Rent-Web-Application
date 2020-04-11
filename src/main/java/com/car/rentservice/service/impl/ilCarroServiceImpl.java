@@ -1,10 +1,8 @@
 package com.car.rentservice.service.impl;
 
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,8 +115,8 @@ public class ilCarroServiceImpl implements ilCarroService {
 	public ResponseModel addCar(String email, CarInputDTO carInputDTO) {
 		Car car = new Car();
 		try {
-			if (carInputDTO != null && carInputDTO.getSerialNumber().length() >= 7
-					&& carInputDTO.getSerialNumber().length() <= 8) {
+			if (carInputDTO != null && carInputDTO.getSerialNumber().length() < 7
+					|| carInputDTO.getSerialNumber().length() > 8) {
 				return generateResponse(HttpStatus.CONFLICT.toString(), "Enter valid serial number ", null);
 			}
 			User user = userRepository.findById(carInputDTO.getUserId()).orElse(null);
@@ -348,6 +346,39 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 		responseModel.setStatus(HttpStatus.OK.toString());
 		responseModel.setDataList(new ArrayList<Object>(Arrays.asList(toCommentsOutputDto(comment))));
+		return responseModel;
+	}
+
+	@Override
+	public ResponseModel getThreeLastCommentsOfCarBySerialNumber(String serialNumber) {
+		ResponseModel responseModel = new ResponseModel();
+		List<Comments> comments = commentRepository.findBySerialNumber(serialNumber).stream()
+				.sorted(Comparator.comparing(Comments::getCreatedAt).reversed())
+				.limit(3)
+				.collect(Collectors.toList());
+		if(comments == null) {
+			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+			responseModel.setMessage("No Comments Found for this serialNumber");
+			responseModel.setDataList(null);
+		} else {
+			responseModel.setMessage("Comments for serial Number" + serialNumber);
+			responseModel.setStatus(HttpStatus.OK.toString());
+			responseModel.setDataList(new ArrayList<>(toCommentsListOutputDto(comments)));
+		}
+		return responseModel;
+	}
+
+	@Override
+	public ResponseModel getBestBooked() {
+		ResponseModel responseModel = new ResponseModel();
+//		List<Car> carList = carRepository.findAll();
+//		List<Reservation> reservations = carList.stream().flatMap(r -> r.getUser().getReservations().parallelStream())
+//				.sorted(Comparator.comparingInt(c -> c.getUser().getReservations().size()).reversed())
+//				.limit(3)
+//				.collect(Collectors.toList());
+//
+//		responseModel.setDataList(new ArrayList<>(Arrays.asList(reservations)));
+//		System.out.println(reservations);
 		return responseModel;
 	}
 
