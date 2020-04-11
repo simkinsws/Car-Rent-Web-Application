@@ -3,21 +3,13 @@ package com.car.rentservice.controllers;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.car.rentservice.dto.*;
+import com.car.rentservice.modal.Comments;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.car.rentservice.dto.CarInputDTO;
-import com.car.rentservice.dto.CarOwnerOutputDTO;
-import com.car.rentservice.dto.ResponseModel;
-import com.car.rentservice.dto.UpdateUserInputDTO;
-import com.car.rentservice.dto.UserSuccessResponseDTO;
 import com.car.rentservice.service.ilCarroService;
 
 @RestController
@@ -105,6 +97,39 @@ public class ilCarroController {
 			responseModel.setDataList(null);
 		}
 		return responseModel;
+	}
+
+	@GetMapping("/car/get/{serialNumber}")
+	public ResponseModel getCarBySerialNumber(@PathVariable String serialNumber) {
+		return ilCarroService.getCarBySerialNumber(serialNumber);
+	}
+
+	@GetMapping("/user/cars")
+	public ResponseModel getOwnerCars(Authentication authentication) {
+		return ilCarroService.getOwnerCars(authentication.getName());
+	}
+
+	@GetMapping("user/cars/car/{serialNumber}")
+	public ResponseModel getOwnerCarBySerialNumber(Authentication authentication,@PathVariable String serialNumber) {
+		return ilCarroService.getOwnerCarBySerialNumber(authentication.getName(),serialNumber);
+	}
+
+	@GetMapping("/user/cars/periods/{serialNumber}")
+	public ResponseModel getOwnerBookedPeriodsBySerialNumber(Authentication authentication,
+															 @PathVariable String serialNumber) {
+		return ilCarroService.getOwnerBookedPeriodsBySerialNumber(authentication.getName(),serialNumber);
+	}
+
+	@GetMapping("/comments")
+	public ResponseModel getLastComments() {
+		return ilCarroService.getLatestComments();
+	}
+
+	@PostMapping("/comment/{serialNumber}")
+	public ResponseModel addComment(Authentication authentication,
+									@PathVariable String serialNumber,
+									@RequestBody CommentInputDTO commentInputDTO) {
+		return ilCarroService.addComment(authentication.getName(),serialNumber,commentInputDTO);
 	}
 
 }

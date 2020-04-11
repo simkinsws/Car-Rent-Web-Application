@@ -22,11 +22,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class Reservation extends Auditable<String> {
 
-	/*
-	 * // @GeneratedValue(strategy = GenerationType.SEQUENCE, generator =
-	 * "reservationSequence") // @SequenceGenerator(name = "reservationSequence",
-	 * sequenceName = "RESERVATION_SEQ", allocationSize = 1)
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "reservationSequence")
 	@SequenceGenerator(name = "reservationSequence", sequenceName = "RESERVATION_SEQ", allocationSize = 1)
