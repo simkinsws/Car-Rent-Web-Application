@@ -7,12 +7,10 @@ import lombok.Getter;
 @Getter
 public class CommentInputDTO {
 
-    private final String post;
-    private final long userId;
+	private final String post;
 
-    @JsonCreator
-    public CommentInputDTO(@JsonProperty("post") String post, @JsonProperty("userId")long userId) {
-        this.post = post;
-        this.userId = userId;
-    }
+	@JsonCreator
+	public CommentInputDTO(@JsonProperty("post") String post) {
+		this.post = post;
+	}
 }

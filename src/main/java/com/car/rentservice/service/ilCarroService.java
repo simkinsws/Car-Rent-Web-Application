@@ -3,11 +3,11 @@ package com.car.rentservice.service;
 import com.car.rentservice.dto.*;
 
 public interface ilCarroService {
-	UserSuccessResponseDTO updateUser(String email, UpdateUserInputDTO updateUserInputDTO);
+	ResponseModel updateUser(String email, UpdateUserInputDTO updateUserInputDTO);
 
-	String deleteUser(String email);
+	ResponseModel deleteUser(String email);
 
-	CarOwnerOutputDTO addCar(String email, CarInputDTO carInputDTO);
+	ResponseModel addCar(String email, CarInputDTO carInputDTO);
 
 	ResponseModel deleteCar(String email, String serialNumber);
 

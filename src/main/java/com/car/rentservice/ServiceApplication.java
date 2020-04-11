@@ -129,7 +129,7 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 		car2.setAbout("About car2");
 		car2.setPickUpPlace(pickUpPlace2);
 		car2.setImageUrl(Arrays.asList("img.com", "img4.com"));
-		car2.setUser(newUser);
+		car2.setUser(newUser2);
 		carRepository.save(car2);
 
 		Reservation reservation1 = new Reservation();
@@ -150,7 +150,7 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 		reservation2.setSerialNumber("1234568");
 		reservation2.setOrderNumber("1");
 		reservation2.setConfirmationCode("c234513");
-		reservation2.setUser(newUser);
+		reservation2.setUser(newUser2);
 		reservationRepository.save(reservation2);
 	}
 }

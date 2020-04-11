@@ -1,15 +1,32 @@
 package com.car.rentservice.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
-import com.car.rentservice.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.car.rentservice.dto.BookedCarsOutputDTO;
+import com.car.rentservice.dto.BookedPeriodDTO;
+import com.car.rentservice.dto.BookedPeriodsDTO;
+import com.car.rentservice.dto.BookedPersonOutputDTO;
+import com.car.rentservice.dto.CarInputDTO;
+import com.car.rentservice.dto.CarOutputDTO;
+import com.car.rentservice.dto.CarOwnerOutputDTO;
+import com.car.rentservice.dto.CommentInputDTO;
+import com.car.rentservice.dto.CommentsOutputDTO;
+import com.car.rentservice.dto.OwnerOutputDTO;
+import com.car.rentservice.dto.PickUpPlaceDTO;
+import com.car.rentservice.dto.ResponseModel;
+import com.car.rentservice.dto.UpdateUserInputDTO;
+import com.car.rentservice.dto.UserSuccessResponseDTO;
 import com.car.rentservice.modal.Car;
 import com.car.rentservice.modal.Comments;
 import com.car.rentservice.modal.PickUpPlace;
@@ -21,9 +38,6 @@ import com.car.rentservice.repositories.PickUpPlaceRepository;
 import com.car.rentservice.repositories.ReservationRepository;
 import com.car.rentservice.repositories.UserRepository;
 import com.car.rentservice.service.ilCarroService;
-import org.springframework.web.server.ResponseStatusException;
-
-import javax.xml.ws.Response;
 
 @Service
 public class ilCarroServiceImpl implements ilCarroService {
@@ -44,154 +58,210 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 	@Override
 	@Transactional
-	public UserSuccessResponseDTO updateUser(String email, UpdateUserInputDTO updateUserInputDTO) {
-		User user = userRepository.findByEmail(email);
-		if (user == null) {
-			return null;
-		}
-		user.setFirstName(updateUserInputDTO.getFirstName());
-		user.setSecondName(updateUserInputDTO.getSecondName());
-		user.setPhone(updateUserInputDTO.getPhone());
-		user.setPhotoUrl(updateUserInputDTO.getPhotoUrl());
+	public ResponseModel updateUser(String email, UpdateUserInputDTO updateUserInputDTO) {
+		try {
+			User user = userRepository.findByEmail(email);
+			if (user == null) {
+				return generateResponse(HttpStatus.CONFLICT.toString(), "User does not exists", null);
+			}
+			user.setFirstName(updateUserInputDTO.getFirstName());
+			user.setSecondName(updateUserInputDTO.getSecondName());
+			user.setPhone(updateUserInputDTO.getPhone());
+			user.setPhotoUrl(updateUserInputDTO.getPhotoUrl());
 
-		userRepository.save(user);
-		return toUserSuccessResponseDto(user);
+			userRepository.save(user);
+			return generateResponse(HttpStatus.OK.toString(), "Car is added",
+					new ArrayList<>(Arrays.asList(toUserSuccessResponseDto(user))));
+
+		} catch (Exception e) {
+			return generateResponse(HttpStatus.UNAUTHORIZED.toString(), "Unexpected exception occurs:" + e.toString(),
+					null);
+		}
 	}
 
 	@Override
 	@Transactional
-	public String deleteUser(String email) {
-		User user = userRepository.findByEmail(email);
-		if (user == null) {
-			return "User not found";
-		} else {
-			List<Car> cars = carRepository.findByUserId(user.getId());
-			if (cars != null && !cars.isEmpty()) {
-				for (Car car : cars) {
-					deleteCar(car);
-					System.out.println("Car id :" + car.getId() + " is deleted");
+	public ResponseModel deleteUser(String email) {
+		try {
+			User user = userRepository.findByEmail(email);
+			if (user == null) {
+				return generateResponse(HttpStatus.CONFLICT.toString(), "User does not exists", null);
+			} else {
+				List<Car> cars = carRepository.findByUserId(user.getId());
+				if (cars != null && !cars.isEmpty()) {
+					for (Car car : cars) {
+						deleteCar(car);
+						System.out.println("Car id :" + car.getId() + " is deleted");
+					}
 				}
-			}
 
-			List<Comments> comments = commentRepository.findByUserId(user.getId());
-			if (comments != null && !comments.isEmpty()) {
-				for (Comments comment : comments) {
-					commentRepository.delete(comment);
-					System.out.println("Comment id :" + comment.getId() + " is deleted");
+				List<Comments> comments = commentRepository.findByUserId(user.getId());
+				if (comments != null && !comments.isEmpty()) {
+					for (Comments comment : comments) {
+						commentRepository.delete(comment);
+						System.out.println("Comment id :" + comment.getId() + " is deleted");
+					}
 				}
-			}
 
-			userRepository.delete(user);
+				userRepository.delete(user);
+			}
+			return generateResponse(HttpStatus.OK.toString(), "User deleted.", null);
+		} catch (Exception e) {
+			return generateResponse(HttpStatus.UNAUTHORIZED.toString(), "Unexpected exception occurs:" + e.toString(),
+					null);
 		}
-		return "User deleted";
 	}
 
 	@Override
 	@Transactional
-	public CarOwnerOutputDTO addCar(String email, CarInputDTO carInputDTO) {
+	public ResponseModel addCar(String email, CarInputDTO carInputDTO) {
 		Car car = new Car();
+		try {
+			if (carInputDTO != null && carInputDTO.getSerialNumber().length() >= 7
+					&& carInputDTO.getSerialNumber().length() <= 8) {
+				return generateResponse(HttpStatus.CONFLICT.toString(), "Enter valid serial number ", null);
+			}
+			User user = userRepository.findById(carInputDTO.getUserId()).orElse(null);
+			if (user == null) {
+				return generateResponse(HttpStatus.CONFLICT.toString(), "User does not exists", null);
+			}
+			PickUpPlace pickUpPlace = new PickUpPlace();
+			pickUpPlace.setPlaceId(carInputDTO.getPickUpPlace().getPlaceId());
+			pickUpPlace.setPlaceName(carInputDTO.getPickUpPlace().getPlaceName());
+			pickUpPlace.setLatitude(carInputDTO.getPickUpPlace().getLatitude());
+			pickUpPlace.setLongitude(carInputDTO.getPickUpPlace().getLongitude());
+			pickUpPlaceRepository.save(pickUpPlace);
 
-		User user = userRepository.findById(carInputDTO.getUserId()).orElse(null);
-		PickUpPlace pickUpPlace = new PickUpPlace();
-		pickUpPlace.setPlaceId(carInputDTO.getPickUpPlace().getPlaceId());
-		pickUpPlace.setPlaceName(carInputDTO.getPickUpPlace().getPlaceName());
-		pickUpPlace.setLatitude(carInputDTO.getPickUpPlace().getLatitude());
-		pickUpPlace.setLongitude(carInputDTO.getPickUpPlace().getLongitude());
-		pickUpPlaceRepository.save(pickUpPlace);
+			car.setSerialNumber(carInputDTO.getSerialNumber());
+			car.setMake(carInputDTO.getMake());
+			car.setModal(carInputDTO.getModal());
+			car.setYear(carInputDTO.getYear());
+			car.setEngine(carInputDTO.getEngine());
+			car.setFuel(carInputDTO.getFuel());
+			car.setGear(carInputDTO.getGear());
+			car.setWheelsDrive(carInputDTO.getWheelsDrive());
+			car.setDoors(carInputDTO.getDoors());
+			car.setSeats(carInputDTO.getSeats());
+			car.setFuelConsumption(carInputDTO.getFuelConsumption());
+			car.setFeatures(carInputDTO.getFeatures());
+			car.setPricePerDay(carInputDTO.getPricePerDay());
+			car.setDistanceIncluded(carInputDTO.getDistanceIncluded());
+			car.setAbout(carInputDTO.getAbout());
+			car.setPickUpPlace(pickUpPlace);
+			car.setImageUrl(carInputDTO.getImageUrl());
+			car.setUser(user);
 
-		car.setSerialNumber(carInputDTO.getSerialNumber());
-		car.setMake(carInputDTO.getMake());
-		car.setModal(carInputDTO.getModal());
-		car.setYear(carInputDTO.getYear());
-		car.setEngine(carInputDTO.getEngine());
-		car.setFuel(carInputDTO.getFuel());
-		car.setGear(carInputDTO.getGear());
-		car.setWheelsDrive(carInputDTO.getWheelsDrive());
-		car.setDoors(carInputDTO.getDoors());
-		car.setSeats(carInputDTO.getSeats());
-		car.setFuelConsumption(carInputDTO.getFuelConsumption());
-		car.setFeatures(carInputDTO.getFeatures());
-		car.setPricePerDay(carInputDTO.getPricePerDay());
-		car.setDistanceIncluded(carInputDTO.getDistanceIncluded());
-		car.setAbout(carInputDTO.getAbout());
-		car.setPickUpPlace(pickUpPlace);
-		car.setImageUrl(carInputDTO.getImageUrl());
-		car.setUser(user);
+			carRepository.save(car);
 
-		carRepository.save(car);
+			userRepository.save(user);
+			return generateResponse(HttpStatus.OK.toString(), "Car is added",
+					new ArrayList<>(Arrays.asList(toCarOwnerDto(car))));
+		} catch (Exception e) {
+			return generateResponse(HttpStatus.UNAUTHORIZED.toString(), "Unexpected exception occurs:" + e.toString(),
+					null);
+		}
 
-		userRepository.save(user);
-		return toCarOwnerDto(car);
 	}
 
 	@Override
 	@Transactional
 	public ResponseModel updateCar(String email, String serialNumber, CarInputDTO carInputDTO) {
-
-		ResponseModel responseModel = new ResponseModel();
 		User user = userRepository.findByEmail(email);
 		Car car = carRepository.findBySerialNumber(serialNumber).orElse(null);
 		// Checking if new serial number is exists for another car or not
-		Car updatedCar = carRepository.findBySerialNumber(carInputDTO.getSerialNumber()).orElse(null);
-		if (updatedCar != null && updatedCar.getSerialNumber() == car.getSerialNumber()
-				&& car.getId() != updatedCar.getId()) {
-			responseModel.setStatus(HttpStatus.CONFLICT.toString());
-			responseModel.setMessage("Serial Number is already");
-			responseModel.setDataList(null);
-			return responseModel;
-		} else {
-			if (car.getUser().getId() == user.getId()) {
-				PickUpPlace pickUpPlace = new PickUpPlace();
-				pickUpPlace.setPlaceId(carInputDTO.getPickUpPlace().getPlaceId());
-				pickUpPlace.setPlaceName(carInputDTO.getPickUpPlace().getPlaceName());
-				pickUpPlace.setLatitude(carInputDTO.getPickUpPlace().getLatitude());
-				pickUpPlace.setLongitude(carInputDTO.getPickUpPlace().getLongitude());
-				pickUpPlaceRepository.save(pickUpPlace);
 
-				car.setSerialNumber(carInputDTO.getSerialNumber());
-				car.setMake(carInputDTO.getMake());
-				car.setModal(carInputDTO.getModal());
-				car.setYear(carInputDTO.getYear());
-				car.setEngine(carInputDTO.getEngine());
-				car.setFuel(carInputDTO.getFuel());
-				car.setGear(carInputDTO.getGear());
-				car.setWheelsDrive(carInputDTO.getWheelsDrive());
-				car.setDoors(carInputDTO.getDoors());
-				car.setSeats(carInputDTO.getSeats());
-				car.setFuelConsumption(carInputDTO.getFuelConsumption());
-				car.setFeatures(carInputDTO.getFeatures());
-				car.setPricePerDay(carInputDTO.getPricePerDay());
-				car.setDistanceIncluded(carInputDTO.getDistanceIncluded());
-				car.setAbout(carInputDTO.getAbout());
-				car.setPickUpPlace(pickUpPlace);
-				car.setImageUrl(carInputDTO.getImageUrl());
-				car.setUser(user);
-				carRepository.save(car);
-				responseModel.setStatus(HttpStatus.OK.toString());
-				responseModel.setMessage("Car has been updated");
-				responseModel.setDataList(new ArrayList<Object>(Arrays.asList(toCarOwnerDto(car))));
-				return responseModel;
+		try {
+			Car updatedCar = carRepository.findBySerialNumber(carInputDTO.getSerialNumber()).orElse(null);
+			if (updatedCar != null && updatedCar.getSerialNumber() == car.getSerialNumber()
+					&& car.getId() != updatedCar.getId()) {
+				return generateResponse(HttpStatus.CONFLICT.toString(), "Serial Number is already", null);
 			} else {
-				responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
-				responseModel.setMessage("You are not authorized");
-				responseModel.setDataList(null);
-				return responseModel;
+				if (car.getUser().getId() == user.getId()) {
+					PickUpPlace pickUpPlace = new PickUpPlace();
+					pickUpPlace.setPlaceId(carInputDTO.getPickUpPlace().getPlaceId());
+					pickUpPlace.setPlaceName(carInputDTO.getPickUpPlace().getPlaceName());
+					pickUpPlace.setLatitude(carInputDTO.getPickUpPlace().getLatitude());
+					pickUpPlace.setLongitude(carInputDTO.getPickUpPlace().getLongitude());
+					pickUpPlaceRepository.save(pickUpPlace);
+
+					car.setSerialNumber(carInputDTO.getSerialNumber());
+					car.setMake(carInputDTO.getMake());
+					car.setModal(carInputDTO.getModal());
+					car.setYear(carInputDTO.getYear());
+					car.setEngine(carInputDTO.getEngine());
+					car.setFuel(carInputDTO.getFuel());
+					car.setGear(carInputDTO.getGear());
+					car.setWheelsDrive(carInputDTO.getWheelsDrive());
+					car.setDoors(carInputDTO.getDoors());
+					car.setSeats(carInputDTO.getSeats());
+					car.setFuelConsumption(carInputDTO.getFuelConsumption());
+					car.setFeatures(carInputDTO.getFeatures());
+					car.setPricePerDay(carInputDTO.getPricePerDay());
+					car.setDistanceIncluded(carInputDTO.getDistanceIncluded());
+					car.setAbout(carInputDTO.getAbout());
+					car.setPickUpPlace(pickUpPlace);
+					car.setImageUrl(carInputDTO.getImageUrl());
+					car.setUser(user);
+					carRepository.save(car);
+					return generateResponse(HttpStatus.OK.toString(), "Car has been updated",
+							new ArrayList<Object>(Arrays.asList(toCarOwnerDto(car))));
+				} else {
+					return generateResponse(HttpStatus.UNAUTHORIZED.toString(),
+							"You are not authorized to update the car.", null);
+				}
 			}
+		} catch (Exception e) {
+			return generateResponse(HttpStatus.UNAUTHORIZED.toString(), "Unexpected exception occurs:" + e.toString(),
+					null);
 		}
+	}
+
+	@Override
+	@Transactional
+	public ResponseModel deleteCar(String email, String serialNumber) {
+		try {
+			User user = userRepository.findByEmail(email);
+			List<Reservation> reservationList = reservationRepository.findBySerialNumber(serialNumber);
+			for (Reservation reservation : reservationList) {
+				if (LocalDateTime.now().isBefore(reservation.getEndDateTime())) {
+
+					return generateResponse(HttpStatus.CONFLICT.toString(),
+							"Car with Serial Number" + serialNumber + "cannot be deleted, as it is already reserved",
+							null);
+				}
+			}
+			Car car = carRepository.findBySerialNumber(serialNumber).orElse(null);
+			if (car.getUser().getId() == user.getId()) {
+				deleteCar(car);
+				return generateResponse(HttpStatus.OK.toString(), "Car with pickup place is deleted", null);
+			} else {
+				return generateResponse(HttpStatus.UNAUTHORIZED.toString(), "You are not authorized to delete the car.",
+						null);
+			}
+		} catch (Exception e) {
+			return generateResponse(HttpStatus.UNAUTHORIZED.toString(), "Unexpected exception occurs:" + e.toString(),
+					null);
+		}
+	}
+
+	private void deleteCar(Car car) {
+		PickUpPlace pickUpPlace = car.getPickUpPlace();
+		carRepository.delete(car);
+		pickUpPlaceRepository.delete(pickUpPlace);
 	}
 
 	@Override
 	public ResponseModel getCarBySerialNumber(String serialNumber) {
 		ResponseModel responseModel = new ResponseModel();
-			Car car = carRepository.findBySerialNumber(serialNumber).orElse(null);
-			if (car == null) {
-				responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
-				responseModel.setMessage("Car Not Found.");
-				responseModel.setDataList(null);
-			} else {
-				responseModel.setStatus(HttpStatus.OK.toString());
-				responseModel.setDataList(new ArrayList<>(Arrays.asList(toCarOwnerDto(car))));
-			}
+		Car car = carRepository.findBySerialNumber(serialNumber).orElse(null);
+		if (car == null) {
+			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+			responseModel.setMessage("Car Not Found.");
+			responseModel.setDataList(null);
+		} else {
+			responseModel.setStatus(HttpStatus.OK.toString());
+			responseModel.setDataList(new ArrayList<>(Arrays.asList(toCarOwnerDto(car))));
+		}
 
 		return responseModel;
 	}
@@ -199,17 +269,17 @@ public class ilCarroServiceImpl implements ilCarroService {
 	@Override
 	public ResponseModel getOwnerCars(String email) {
 		ResponseModel responseModel = new ResponseModel();
-			User user = userRepository.findByEmail(email);
-			List<Car> ownCars = carRepository.findByUserId(user.getId());
-			if (ownCars == null) {
-				responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
-				responseModel.setMessage("No Cars");
-				responseModel.setDataList(null);
-			} else {
-				responseModel.setStatus(HttpStatus.OK.toString());
-				responseModel.setMessage(user.getFirstName() + user.getSecondName() + " cars will displayed down.");
-				responseModel.setDataList(new ArrayList<>(toCarListOutputDTO(ownCars)));
-			}
+		User user = userRepository.findByEmail(email);
+		List<Car> ownCars = carRepository.findByUserId(user.getId());
+		if (ownCars == null) {
+			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+			responseModel.setMessage("No Cars");
+			responseModel.setDataList(null);
+		} else {
+			responseModel.setStatus(HttpStatus.OK.toString());
+			responseModel.setMessage(user.getFirstName() + user.getSecondName() + " cars will displayed down.");
+			responseModel.setDataList(new ArrayList<>(toCarListOutputDTO(ownCars)));
+		}
 		return responseModel;
 	}
 
@@ -217,10 +287,9 @@ public class ilCarroServiceImpl implements ilCarroService {
 	public ResponseModel getOwnerCarBySerialNumber(String email, String serialNumber) {
 		ResponseModel responseModel = new ResponseModel();
 		User user = userRepository.findByEmail(email);
-		Car car = carRepository.findBySerialNumber(serialNumber).orElseThrow(() ->
-				new ResponseStatusException(
-						HttpStatus.NOT_FOUND,"Car Not Exists"));
-		if(user.getCars().contains(car)) {
+		Car car = carRepository.findBySerialNumber(serialNumber)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car Not Exists"));
+		if (user.getCars().contains(car)) {
 			responseModel.setStatus(HttpStatus.OK.toString());
 			responseModel.setMessage("Car with serialNumber " + car.getSerialNumber());
 			responseModel.setDataList(new ArrayList<>(Arrays.asList(toCarOutputDto(car))));
@@ -234,20 +303,19 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ResponseModel getOwnerBookedPeriodsBySerialNumber(String email,String serialNumber) {
+	public ResponseModel getOwnerBookedPeriodsBySerialNumber(String email, String serialNumber) {
 		ResponseModel responseModel = new ResponseModel();
 		User user = userRepository.findByEmail(email);
 		List<Reservation> bookedPeriods = reservationRepository.findBySerialNumber(serialNumber);
 		List<Reservation> reservations = bookedPeriods.stream()
-				.filter(b -> b.getUser().getEmail().equals(user.getEmail()))
-				.collect(Collectors.toList());
-		if(!reservations.isEmpty() && reservations != null) {
+				.filter(b -> b.getUser().getEmail().equals(user.getEmail())).collect(Collectors.toList());
+		if (!reservations.isEmpty() && reservations != null) {
 			responseModel.setStatus(HttpStatus.OK.toString());
 			responseModel.setDataList(new ArrayList<>(toBookedListPeriodsDto(reservations)));
 			responseModel.setMessage("Booked Periods of serialNumber " + serialNumber);
 		} else {
 			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
-			responseModel.setMessage("Booked Periods not Found for this serialNumber "+serialNumber);
+			responseModel.setMessage("Booked Periods not Found for this serialNumber " + serialNumber);
 		}
 		return responseModel;
 	}
@@ -255,22 +323,20 @@ public class ilCarroServiceImpl implements ilCarroService {
 	@Override
 	public ResponseModel getLatestComments() {
 		List<Comments> comments = commentRepository.findAll().stream()
-				.sorted(Comparator.comparing(Comments::getCreatedAt).reversed())
-				.limit(6)
-				.collect(Collectors.toList());
-		ResponseModel responseModel = new ResponseModel();
-		responseModel.setMessage("6 last comments");
-		responseModel.setStatus(HttpStatus.OK.toString());
-		responseModel.setDataList(new ArrayList<>(toCommentsListOutputDto(comments)));
-		return responseModel;
+				.sorted(Comparator.comparing(Comments::getCreatedAt).reversed()).limit(6).collect(Collectors.toList());
+		return generateResponse(HttpStatus.OK.toString(), "Last 6 comments: ",
+				new ArrayList<>(toCommentsListOutputDto(comments)));
 	}
 
 	@Override
 	@Transactional
 	public ResponseModel addComment(String email, String serialNumber, CommentInputDTO commentInputDTO) {
 		ResponseModel responseModel = new ResponseModel();
-		User commenter = userRepository.findByEmail(email);//logged in user.
-		Car car = carRepository.findByUserIdAndSerialNumber(commentInputDTO.getUserId(),serialNumber);
+		User commenter = userRepository.findByEmail(email);// logged in user.
+		Car car = carRepository.findBySerialNumber(serialNumber)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car Not Exists"));
+		User carOwnerUser = userRepository.findById(car.getUser().getId())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User Not Exists"));// Car owner
 		Comments comment = new Comments();
 		comment.setUser(commenter);
 		comment.setPost(commentInputDTO.getPost());
@@ -278,44 +344,11 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 		commentRepository.save(comment);
 
-		userRepository.save(commenter);
+		userRepository.save(carOwnerUser);
 
 		responseModel.setStatus(HttpStatus.OK.toString());
 		responseModel.setDataList(new ArrayList<Object>(Arrays.asList(toCommentsOutputDto(comment))));
 		return responseModel;
-	}
-
-	@Override
-	@Transactional
-	public ResponseModel deleteCar(String email, String serialNumber) {
-		ResponseModel responseModel = new ResponseModel();
-		User user = userRepository.findByEmail(email);
-		List<Reservation> reservationList = reservationRepository.findBySerialNumber(serialNumber);
-		for (Reservation reservation : reservationList) {
-			if (LocalDateTime.now().isBefore(reservation.getEndDateTime())) {
-				responseModel.setStatus(HttpStatus.CONFLICT.toString());
-				responseModel.setMessage(
-						"Car with Serial Number" + serialNumber + "cannot be deleted, as it is already reserved");
-				return null;
-			}
-		}
-		Car car = carRepository.findBySerialNumber(serialNumber).orElse(null);
-		if (car.getUser().getId() == user.getId()) {
-			deleteCar(car);
-			responseModel.setStatus(HttpStatus.OK.toString());
-			responseModel.setMessage("Car with pickup place is deleted");
-			return responseModel;
-		} else {
-			responseModel.setStatus(HttpStatus.UNAUTHORIZED.toString());
-			responseModel.setMessage("You are not authorized");
-			return responseModel;
-		}
-	}
-
-	private void deleteCar(Car car) {
-		PickUpPlace pickUpPlace = car.getPickUpPlace();
-		carRepository.delete(car);
-		pickUpPlaceRepository.delete(pickUpPlace);
 	}
 
 	private CarOwnerOutputDTO toCarOwnerDto(Car car) {
@@ -392,5 +425,9 @@ public class ilCarroServiceImpl implements ilCarroService {
 	private CommentsOutputDTO toCommentsOutputDto(Comments comments) {
 		return new CommentsOutputDTO(comments.getUser().getFirstName(), comments.getUser().getSecondName(),
 				comments.getUser().getPhotoUrl(), comments.getCreatedAt(), comments.getPost());
+	}
+
+	private ResponseModel generateResponse(String status, String message, List<Object> data) {
+		return new ResponseModel(status, message, data);
 	}
 }
