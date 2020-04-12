@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -380,6 +382,28 @@ public class ilCarroServiceImpl implements ilCarroService {
 //		responseModel.setDataList(new ArrayList<>(Arrays.asList(reservations)));
 //		System.out.println(reservations);
 		return responseModel;
+	}
+
+//	@Override
+//	public ResponseModel searchCar(String city, LocalDateTime startDateTime, LocalDateTime endDateTime
+//	,int minAmount, int maxAmount) {
+//		List<Car> carsByCity = carRepository.searchCar(city,startDateTime,null, minAmount,maxAmount);
+//		ResponseModel responseModel = new ResponseModel();
+//		responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carsByCity)));
+//		return responseModel;
+//	}
+
+	@Override
+	public ResponseModel searchCarByFilters(String make,String modal, String year, String engine,
+											String fuel, String gear, String wheelsDrive) {
+		List<Car> carList = carRepository.searchByFilters(make,modal,year,engine,fuel,gear,wheelsDrive);
+		ResponseModel responseModel = new ResponseModel();
+		responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carList)));
+		return responseModel;
+	}
+
+	private List<CarOwnerOutputDTO> toCarOwnerListOutputDTO(List<Car> carsByCity) {
+		return carsByCity.stream().map(this::toCarOwnerDto).collect(Collectors.toList());
 	}
 
 	private CarOwnerOutputDTO toCarOwnerDto(Car car) {

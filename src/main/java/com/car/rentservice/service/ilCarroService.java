@@ -1,6 +1,9 @@
 package com.car.rentservice.service;
 
 import com.car.rentservice.dto.*;
+import org.springframework.data.domain.Page;
+
+import java.time.LocalDateTime;
 
 public interface ilCarroService {
 	ResponseModel updateUser(String email, UpdateUserInputDTO updateUserInputDTO);
@@ -28,4 +31,10 @@ public interface ilCarroService {
 	ResponseModel getThreeLastCommentsOfCarBySerialNumber(String serialNumber);
 
 	ResponseModel getBestBooked();
+
+//	ResponseModel searchCar(String city, LocalDateTime startDateTime, LocalDateTime endDateTime
+//	,int minAmount, int maxAmount);
+
+	ResponseModel searchCarByFilters(String make, String modal, String year, String engine, String fuel,
+									 String gear, String wheelsDrive);
 }
