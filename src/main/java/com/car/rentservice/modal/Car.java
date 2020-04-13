@@ -28,7 +28,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-//@Table(name = "car", uniqueConstraints = @UniqueConstraint(columnNames = { "serialNumber" }))
 @Table(name = "car")
 @Audited
 @Getter

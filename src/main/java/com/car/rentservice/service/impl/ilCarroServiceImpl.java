@@ -1,13 +1,14 @@
 package com.car.rentservice.service.impl;
 
-import java.lang.reflect.Array;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -355,10 +356,8 @@ public class ilCarroServiceImpl implements ilCarroService {
 	public ResponseModel getThreeLastCommentsOfCarBySerialNumber(String serialNumber) {
 		ResponseModel responseModel = new ResponseModel();
 		List<Comments> comments = commentRepository.findBySerialNumber(serialNumber).stream()
-				.sorted(Comparator.comparing(Comments::getCreatedAt).reversed())
-				.limit(3)
-				.collect(Collectors.toList());
-		if(comments == null) {
+				.sorted(Comparator.comparing(Comments::getCreatedAt).reversed()).limit(3).collect(Collectors.toList());
+		if (comments == null) {
 			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
 			responseModel.setMessage("No Comments Found for this serialNumber");
 			responseModel.setDataList(null);
@@ -373,15 +372,31 @@ public class ilCarroServiceImpl implements ilCarroService {
 	@Override
 	public ResponseModel getBestBooked() {
 		ResponseModel responseModel = new ResponseModel();
-//		List<Car> carList = carRepository.findAll();
-//		List<Reservation> reservations = carList.stream().flatMap(r -> r.getUser().getReservations().parallelStream())
-//				.sorted(Comparator.comparingInt(c -> c.getUser().getReservations().size()).reversed())
-//				.limit(3)
-//				.collect(Collectors.toList());
-//
-//		responseModel.setDataList(new ArrayList<>(Arrays.asList(reservations)));
-//		System.out.println(reservations);
-		return responseModel;
+		try {
+			List<Object> bestBookedCarList = new ArrayList<>();
+			@SuppressWarnings({ "unchecked" })
+			List<Map<String, Object>> bestBookedCars = (List<Map<String, Object>>) (List<?>) reservationRepository
+					.countBySerialNumber();
+
+			for (Map<String, Object> bestBookedCarMap : bestBookedCars) {
+				for (Map.Entry<String, Object> bestBookedCar : bestBookedCarMap.entrySet()) {
+					if (bestBookedCar.getKey().equals("serialNumber")) {
+						Car car = carRepository.findBySerialNumber((String) bestBookedCar.getValue()).orElse(null);
+						bestBookedCarList.add(toCarOwnerDto(car));
+					}
+				}
+			}
+			responseModel.setMessage("Best 3 booked cars found");
+			responseModel.setStatus(HttpStatus.OK.toString());
+			responseModel.setDataList(bestBookedCarList);
+
+			return responseModel;
+		} catch (Exception e) {
+			responseModel.setMessage("No car found or an exception occured: " + e.toString());
+			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+			responseModel.setDataList(null);
+			return responseModel;
+		}
 	}
 
 //	@Override
@@ -394,9 +409,9 @@ public class ilCarroServiceImpl implements ilCarroService {
 //	}
 
 	@Override
-	public ResponseModel searchCarByFilters(String make,String modal, String year, String engine,
-											String fuel, String gear, String wheelsDrive) {
-		List<Car> carList = carRepository.searchByFilters(make,modal,year,engine,fuel,gear,wheelsDrive);
+	public ResponseModel searchCarByFilters(String make, String modal, String year, String engine, String fuel,
+			String gear, String wheelsDrive) {
+		List<Car> carList = carRepository.searchByFilters(make, modal, year, engine, fuel, gear, wheelsDrive);
 		ResponseModel responseModel = new ResponseModel();
 		responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carList)));
 		return responseModel;

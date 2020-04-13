@@ -1,9 +1,9 @@
 package com.car.rentservice.service;
 
-import com.car.rentservice.dto.*;
-import org.springframework.data.domain.Page;
-
-import java.time.LocalDateTime;
+import com.car.rentservice.dto.CarInputDTO;
+import com.car.rentservice.dto.CommentInputDTO;
+import com.car.rentservice.dto.ResponseModel;
+import com.car.rentservice.dto.UpdateUserInputDTO;
 
 public interface ilCarroService {
 	ResponseModel updateUser(String email, UpdateUserInputDTO updateUserInputDTO);
