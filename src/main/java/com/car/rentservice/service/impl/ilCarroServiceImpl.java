@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -374,9 +377,12 @@ public class ilCarroServiceImpl implements ilCarroService {
 		ResponseModel responseModel = new ResponseModel();
 		try {
 			List<Object> bestBookedCarList = new ArrayList<>();
+			Integer pageNo = 0;
+			Integer pageSize = 3;
+			Pageable paging = PageRequest.of(pageNo, pageSize);
 			@SuppressWarnings({ "unchecked" })
 			List<Map<String, Object>> bestBookedCars = (List<Map<String, Object>>) (List<?>) reservationRepository
-					.countBySerialNumber();
+					.countBySerialNumber(paging);
 
 			for (Map<String, Object> bestBookedCarMap : bestBookedCars) {
 				for (Map.Entry<String, Object> bestBookedCar : bestBookedCarMap.entrySet()) {
@@ -415,6 +421,18 @@ public class ilCarroServiceImpl implements ilCarroService {
 		ResponseModel responseModel = new ResponseModel();
 		responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carList)));
 		return responseModel;
+	}
+
+	@Override
+	public ResponseModel searchCar(Map<String, String> data, Pageable pageable) {
+		Page<Car> carList = carRepository.searchCar(data, pageable);
+		ResponseModel responseModel = new ResponseModel();
+		responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carList)));
+		return responseModel;
+	}
+
+	private List<CarOwnerOutputDTO> toCarOwnerListOutputDTO(Page<Car> carList) {
+		return carList.stream().map(this::toCarOwnerDto).collect(Collectors.toList());
 	}
 
 	private List<CarOwnerOutputDTO> toCarOwnerListOutputDTO(List<Car> carsByCity) {

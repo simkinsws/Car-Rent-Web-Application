@@ -3,6 +3,7 @@ package com.car.rentservice.repositories;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -11,6 +12,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -92,4 +95,72 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 			}
 		});
 	}
+
+	default Page<Car> searchCar(Map<String, String> data, Pageable pageable) {
+		return findAll(new Specification<Car>() {
+			@Override
+			public Predicate toPredicate(Root<Car> root, CriteriaQuery<?> criteriaQuery,
+					CriteriaBuilder criteriaBuilder) {
+				Join<Car, PickUpPlace> pickUpPlace = root.join("pickUpPlace");
+				Join<Car, User> user = root.join("user").join("reservations");
+				List<Predicate> predicates = new ArrayList<>();
+				if (data != null && !data.isEmpty()) {
+					for (Map.Entry<String, String> filterData : data.entrySet()) {
+						if (filterData.getKey() != null) {
+							if (filterData.getKey().equals("placeName")) {
+								predicates.add(criteriaBuilder.and(
+										criteriaBuilder.equal(pickUpPlace.get("placeName"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("startDateTime")) {
+								predicates.add(criteriaBuilder
+										.and(criteriaBuilder.equal(user.get("startDateTime"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("endDateTime")) {
+								predicates.add(criteriaBuilder
+										.and(criteriaBuilder.equal(user.get("endDateTime"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("minAmount")) {
+								predicates.add(criteriaBuilder.and(criteriaBuilder
+										.greaterThanOrEqualTo(user.get("amount"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("maxAmount")) {
+								predicates.add(criteriaBuilder.and(
+										criteriaBuilder.lessThanOrEqualTo(user.get("amount"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("latitude")) {
+								predicates.add(criteriaBuilder.and(
+										criteriaBuilder.equal(pickUpPlace.get("latitude"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("longitude")) {
+								predicates.add(criteriaBuilder.and(
+										criteriaBuilder.equal(pickUpPlace.get("longitude"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("make")) {
+								predicates.add(criteriaBuilder
+										.and(criteriaBuilder.equal(root.get("make"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("modal")) {
+								predicates.add(criteriaBuilder
+										.and(criteriaBuilder.equal(root.get("modal"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("year")) {
+								predicates.add(criteriaBuilder
+										.and(criteriaBuilder.equal(root.get("year"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("engine")) {
+								predicates.add(criteriaBuilder
+										.and(criteriaBuilder.equal(root.get("engine"), filterData.getValue())));
+							}
+							if (filterData.getKey().equals("fuel")) {
+								predicates.add(criteriaBuilder
+										.and(criteriaBuilder.equal(root.get("fuel"), filterData.getValue())));
+							}
+						}
+					}
+				}
+				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+			}
+		}, pageable);
+	}
+
 }

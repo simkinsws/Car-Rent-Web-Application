@@ -1,5 +1,9 @@
 package com.car.rentservice.service;
 
+import java.util.Map;
+
+import org.springframework.data.domain.Pageable;
+
 import com.car.rentservice.dto.CarInputDTO;
 import com.car.rentservice.dto.CommentInputDTO;
 import com.car.rentservice.dto.ResponseModel;
@@ -37,4 +41,6 @@ public interface ilCarroService {
 
 	ResponseModel searchCarByFilters(String make, String modal, String year, String engine, String fuel,
 									 String gear, String wheelsDrive);
+
+	ResponseModel searchCar(Map<String, String> data, Pageable pageable);
 }

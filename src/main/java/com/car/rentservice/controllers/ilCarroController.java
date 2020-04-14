@@ -1,6 +1,9 @@
 package com.car.rentservice.controllers;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +31,7 @@ public class ilCarroController {
 
 	@PutMapping("/user")
 	public ResponseModel updateUser(@RequestBody UpdateUserInputDTO userInputDTO, Authentication authentication) {
-		return ilCarroService.updateUser(authentication.getName(), userInputDTO);		
+		return ilCarroService.updateUser(authentication.getName(), userInputDTO);
 	}
 
 	@PostMapping("/car")
@@ -98,13 +101,14 @@ public class ilCarroController {
 //	}
 
 	@GetMapping("/search/filters/{make}/{modal}/{year}/{engine}/{fuel}/{gear}/{wheelsDrive}")
-	public ResponseModel searchByFilters(@PathVariable String make,
-										 @PathVariable String modal,
-										 @PathVariable String year,
-										 @PathVariable String engine,
-										 @PathVariable String fuel,
-										 @PathVariable String gear,
-										 @PathVariable String wheelsDrive){
-		return ilCarroService.searchCarByFilters(make,modal,year,engine,fuel,gear,wheelsDrive);
+	public ResponseModel searchByFilters(@PathVariable String make, @PathVariable String modal,
+			@PathVariable String year, @PathVariable String engine, @PathVariable String fuel,
+			@PathVariable String gear, @PathVariable String wheelsDrive) {
+		return ilCarroService.searchCarByFilters(make, modal, year, engine, fuel, gear, wheelsDrive);
+	}
+
+	@PostMapping("/search")
+	public ResponseModel searchCar(@RequestBody Map<String, String> data, Pageable pageable) {
+		return ilCarroService.searchCar(data, pageable);
 	}
 }
