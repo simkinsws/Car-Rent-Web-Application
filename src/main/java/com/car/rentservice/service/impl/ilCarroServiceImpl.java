@@ -425,10 +425,51 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 	@Override
 	public ResponseModel searchCar(Map<String, String> data, Pageable pageable) {
-		Page<Car> carList = carRepository.searchCar(data, pageable);
 		ResponseModel responseModel = new ResponseModel();
-		responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carList)));
-		return responseModel;
+		try {
+			Page<Car> carList = carRepository.searchCar(data, pageable);
+			if (carList != null && !carList.isEmpty()) {
+				responseModel.setStatus(HttpStatus.OK.toString());
+				responseModel.setMessage("Cars found");
+				responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carList)));
+				return responseModel;
+			} else {
+				responseModel.setStatus(HttpStatus.OK.toString());
+				responseModel.setMessage("Cars not found, may be wrong filters are provided");
+				responseModel.setDataList(null);
+				return responseModel;
+			}
+		} catch (Exception e) {
+			responseModel.setMessage("No car found or an exception occured: " + e.toString());
+			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+			responseModel.setDataList(null);
+			return responseModel;
+		}
+	}
+
+	@Override
+	public ResponseModel searchByCoordinates(Double latitude, Double longitude, Double radius, Pageable pageable) {
+		ResponseModel responseModel = new ResponseModel();
+		try {
+			List<Car> carList = carRepository.searchByCoordinates(latitude, longitude, radius, pageable);
+			System.out.println(carList);
+			if (carList != null && !carList.isEmpty()) {
+				responseModel.setStatus(HttpStatus.OK.toString());
+				responseModel.setMessage("Cars found");
+				responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carList)));
+				return responseModel;
+			} else {
+				responseModel.setStatus(HttpStatus.OK.toString());
+				responseModel.setMessage("Cars not found, may be wrong filters are provided");
+				responseModel.setDataList(null);
+				return responseModel;
+			}
+		} catch (Exception e) {
+			responseModel.setMessage("No car found or an exception occured: " + e.toString());
+			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+			responseModel.setDataList(null);
+			return responseModel;
+		}
 	}
 
 	private List<CarOwnerOutputDTO> toCarOwnerListOutputDTO(Page<Car> carList) {

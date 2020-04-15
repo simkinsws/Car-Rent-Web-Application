@@ -163,4 +163,9 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 		}, pageable);
 	}
 
+	static final String HAVERSINE_PART = "(6371 * acos(cos(radians(:latitude)) * cos(radians(m.latitude)) * cos(radians(m.longitude) - radians(:longitude)) + sin(radians(:latitude)) * sin(radians(m.latitude))))";
+
+	@Query("SELECT c FROM Car c INNER JOIN PickUpPlace m ON c.id = m.id WHERE " + HAVERSINE_PART
+			+ " < :distance ORDER BY " + HAVERSINE_PART + " DESC")
+	List<Car> searchByCoordinates(Double latitude, Double longitude, Double distance, Pageable pageable);
 }

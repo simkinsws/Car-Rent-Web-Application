@@ -92,14 +92,6 @@ public class ilCarroController {
 		return ilCarroService.getBestBooked();
 	}
 
-//	@GetMapping("/search/{city}/{startDateTime}/{endDateTime}/{minAmount}/{maxAmount}")
-//	public ResponseModel searchCar(@PathVariable String city,
-//								   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable LocalDateTime startDateTime,
-//								   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) @PathVariable LocalDateTime endDateTime,
-//								   @PathVariable int minAmount, @PathVariable int maxAmount) {
-//		return ilCarroService.searchCar(city, startDateTime, endDateTime, minAmount, maxAmount);
-//	}
-
 	@GetMapping("/search/filters/{make}/{modal}/{year}/{engine}/{fuel}/{gear}/{wheelsDrive}")
 	public ResponseModel searchByFilters(@PathVariable String make, @PathVariable String modal,
 			@PathVariable String year, @PathVariable String engine, @PathVariable String fuel,
@@ -110,5 +102,11 @@ public class ilCarroController {
 	@PostMapping("/search")
 	public ResponseModel searchCar(@RequestBody Map<String, String> data, Pageable pageable) {
 		return ilCarroService.searchCar(data, pageable);
+	}
+
+	@PostMapping("/search/geo")
+	public ResponseModel searchByCoordinates(@RequestBody Map<String, Double> data, Pageable pageable) {
+		return ilCarroService.searchByCoordinates(data.get("latitude"), data.get("longitude"), data.get("radius"),
+				pageable);
 	}
 }

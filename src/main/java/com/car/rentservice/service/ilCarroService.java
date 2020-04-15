@@ -26,11 +26,11 @@ public interface ilCarroService {
 
 	ResponseModel getOwnerCarBySerialNumber(String email, String serialNumber);
 
-	ResponseModel getOwnerBookedPeriodsBySerialNumber(String email,String serialNumber);
+	ResponseModel getOwnerBookedPeriodsBySerialNumber(String email, String serialNumber);
 
 	ResponseModel getLatestComments();
 
-	ResponseModel addComment(String email,String serialNumber, CommentInputDTO commentInputDTO);
+	ResponseModel addComment(String email, String serialNumber, CommentInputDTO commentInputDTO);
 
 	ResponseModel getThreeLastCommentsOfCarBySerialNumber(String serialNumber);
 
@@ -39,8 +39,10 @@ public interface ilCarroService {
 //	ResponseModel searchCar(String city, LocalDateTime startDateTime, LocalDateTime endDateTime
 //	,int minAmount, int maxAmount);
 
-	ResponseModel searchCarByFilters(String make, String modal, String year, String engine, String fuel,
-									 String gear, String wheelsDrive);
+	ResponseModel searchCarByFilters(String make, String modal, String year, String engine, String fuel, String gear,
+			String wheelsDrive);
 
 	ResponseModel searchCar(Map<String, String> data, Pageable pageable);
+
+	ResponseModel searchByCoordinates(Double latitude, Double longitude, Double radius, Pageable pageable);
 }
