@@ -2,12 +2,8 @@ package com.car.rentservice.service;
 
 import java.util.Map;
 
+import com.car.rentservice.dto.*;
 import org.springframework.data.domain.Pageable;
-
-import com.car.rentservice.dto.CarInputDTO;
-import com.car.rentservice.dto.CommentInputDTO;
-import com.car.rentservice.dto.ResponseModel;
-import com.car.rentservice.dto.UpdateUserInputDTO;
 
 public interface ilCarroService {
 	ResponseModel updateUser(String email, UpdateUserInputDTO updateUserInputDTO);
@@ -45,4 +41,6 @@ public interface ilCarroService {
 	ResponseModel searchCar(Map<String, String> data, Pageable pageable);
 
 	ResponseModel searchByCoordinates(Double latitude, Double longitude, Double radius, Pageable pageable);
+
+	ResponseModel makeReservation(String serialNumber, ReservationInputDTO reservationInputDTO);
 }

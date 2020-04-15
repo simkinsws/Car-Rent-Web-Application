@@ -15,4 +15,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
 	@Query(value = "select new map( r.serialNumber as serialNumber ,count(r.serialNumber) as numberOfCar) FROM Reservation r  group by r.serialNumber order by numberOfCar Desc")
 	List<Object> countBySerialNumber(Pageable paging);
+
+	@Query(value = "SELECT RESERVATION_SEQ.next_val FROM reservation_seq" ,nativeQuery = true)
+	long findNextOrderNumberSequence();
 }

@@ -2,6 +2,7 @@ package com.car.rentservice.controllers;
 
 import java.util.Map;
 
+import com.car.rentservice.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -13,10 +14,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.car.rentservice.dto.CarInputDTO;
-import com.car.rentservice.dto.CommentInputDTO;
-import com.car.rentservice.dto.ResponseModel;
-import com.car.rentservice.dto.UpdateUserInputDTO;
 import com.car.rentservice.service.ilCarroService;
 
 @RestController
@@ -108,5 +105,11 @@ public class ilCarroController {
 	public ResponseModel searchByCoordinates(@RequestBody Map<String, Double> data, Pageable pageable) {
 		return ilCarroService.searchByCoordinates(data.get("latitude"), data.get("longitude"), data.get("radius"),
 				pageable);
+	}
+
+	@PostMapping("/makeReservation/{serialNumber}")
+	public ResponseModel makeReservation(@RequestBody ReservationInputDTO reservationInputDTO,
+										 @PathVariable String serialNumber) {
+		return ilCarroService.makeReservation(serialNumber, reservationInputDTO);
 	}
 }

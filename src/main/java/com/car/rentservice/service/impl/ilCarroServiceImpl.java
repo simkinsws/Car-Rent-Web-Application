@@ -1,6 +1,8 @@
 package com.car.rentservice.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.car.rentservice.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,20 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.car.rentservice.dto.BookedCarsOutputDTO;
-import com.car.rentservice.dto.BookedPeriodDTO;
-import com.car.rentservice.dto.BookedPeriodsDTO;
-import com.car.rentservice.dto.BookedPersonOutputDTO;
-import com.car.rentservice.dto.CarInputDTO;
-import com.car.rentservice.dto.CarOutputDTO;
-import com.car.rentservice.dto.CarOwnerOutputDTO;
-import com.car.rentservice.dto.CommentInputDTO;
-import com.car.rentservice.dto.CommentsOutputDTO;
-import com.car.rentservice.dto.OwnerOutputDTO;
-import com.car.rentservice.dto.PickUpPlaceDTO;
-import com.car.rentservice.dto.ResponseModel;
-import com.car.rentservice.dto.UpdateUserInputDTO;
-import com.car.rentservice.dto.UserSuccessResponseDTO;
 import com.car.rentservice.modal.Car;
 import com.car.rentservice.modal.Comments;
 import com.car.rentservice.modal.PickUpPlace;
@@ -42,6 +31,8 @@ import com.car.rentservice.repositories.PickUpPlaceRepository;
 import com.car.rentservice.repositories.ReservationRepository;
 import com.car.rentservice.repositories.UserRepository;
 import com.car.rentservice.service.ilCarroService;
+
+import javax.xml.ws.Response;
 
 @Service
 public class ilCarroServiceImpl implements ilCarroService {
@@ -470,6 +461,45 @@ public class ilCarroServiceImpl implements ilCarroService {
 			responseModel.setDataList(null);
 			return responseModel;
 		}
+	}
+
+	@Override
+	public ResponseModel makeReservation(String serialNumber, ReservationInputDTO reservationInputDTO) {
+		ResponseModel responseModel = new ResponseModel();
+		User user = userRepository.findByEmail(reservationInputDTO.getBookedPerson().getEmail());
+		if(user == null) {
+			responseModel.setMessage("User not found");
+			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+		}
+		Car car = carRepository.findBySerialNumber(serialNumber).orElseThrow(() -> new
+				ResponseStatusException(HttpStatus.NOT_FOUND, "Car Not Found"));
+//		BigDecimal pricePerDay = new BigDecimal(car.getPricePerDay().longValue());
+		BigDecimal amount = new BigDecimal(ChronoUnit.DAYS.between(reservationInputDTO.getStartDateTime(),
+				reservationInputDTO.getEndDateTime()) * car.getPricePerDay().longValue());
+
+		Reservation reservation =
+				new Reservation();
+		reservation.setAmount(amount);
+		reservation.setBookingDate(LocalDateTime.now());
+		reservation.setConfirmationCode("CONF"+reservationRepository.findNextOrderNumberSequence());
+		reservation.setStartDateTime(reservationInputDTO.getStartDateTime());
+		reservation.setEndDateTime(reservationInputDTO.getEndDateTime());
+		reservation.setOrderNumber("NUMBER"+reservationRepository.findNextOrderNumberSequence());
+		reservation.setPaid(false);
+		reservation.setUser(user);
+
+		reservation.setSerialNumber(serialNumber);
+
+		reservationRepository.save(reservation);
+		carRepository.save(car);
+		userRepository.save(user);
+		responseModel.setDataList(new ArrayList<>(Arrays.asList(toReservationOutputDto(reservation))));
+		return responseModel;
+	}
+
+	private ReservationOutputDTO toReservationOutputDto(Reservation reservation) {
+		return new ReservationOutputDTO(reservation.getOrderNumber(),reservation.getConfirmationCode(),
+				reservation.getAmount(),reservation.getBookingDate());
 	}
 
 	private List<CarOwnerOutputDTO> toCarOwnerListOutputDTO(Page<Car> carList) {
