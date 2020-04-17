@@ -496,8 +496,8 @@ public class ilCarroServiceImpl implements ilCarroService {
 					for (Reservation reservation : reservationList) {
 						if (LocalDateTime.now().isBefore(reservation.getEndDateTime())) {
 
-							return generateResponse(HttpStatus.CONFLICT.toString(), "Car with Serial Number"
-									+ serialNumber + "cannot be booked, as it is already reserved", null);
+							return generateResponse(HttpStatus.CONFLICT.toString(), "Car with Serial Number "
+									+ serialNumber + " cannot be booked, as it is already reserved", null);
 						}
 					}
 				}
@@ -507,9 +507,8 @@ public class ilCarroServiceImpl implements ilCarroService {
 
 				Reservation reservation = new Reservation();
 				reservation.setAmount(amount);
-				reservation.setBookingDate(LocalDateTime.now());
-				// reservation.setConfirmationCode("CONF" +
-				// reservationRepository.findNextOrderNumberSequence());
+				reservation.setBookingDate(reservationInputDTO.getStartDateTime());
+				reservation.setConfirmationCode(CommonConstants.PENDING);
 				reservation.setStartDateTime(reservationInputDTO.getStartDateTime());
 				reservation.setEndDateTime(reservationInputDTO.getEndDateTime());
 				reservation.setOrderNumber("NUMBER" + reservationRepository.findNextOrderNumberSequence());
@@ -519,6 +518,8 @@ public class ilCarroServiceImpl implements ilCarroService {
 				reservationRepository.save(reservation);
 				carRepository.save(car);
 				userRepository.save(user);
+				responseModel.setStatus(HttpStatus.OK.toString());
+				responseModel.setMessage("Car is reserved");
 				responseModel.setDataList(new ArrayList<>(Arrays.asList(toReservationOutputDto(reservation))));
 				return responseModel;
 			}
@@ -542,11 +543,8 @@ public class ilCarroServiceImpl implements ilCarroService {
 			} else {
 				responseModel.setStatus(HttpStatus.CONFLICT.toString());
 				reservation.setConfirmationCode(confirmInputDTO.getConfirmationCode());
-				reservationRepository.save(reservation);
+				reservationRepository.delete(reservation);
 				return HttpStatus.CONFLICT;
-				// Delete the reservation entry
-				// Delete the booking entry from car
-				// Delete the booking entry from user
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

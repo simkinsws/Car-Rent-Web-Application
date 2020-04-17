@@ -138,27 +138,23 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 			car2.setImageUrl(Arrays.asList("img.com", "img4.com"));
 			car2.setUser(newUser2);
 			carRepository.save(car2);
-
-			Reservation reservation1 = new Reservation();
-			reservation1.setAmount(new BigDecimal(123.5));
-			reservation1.setBookingDate(LocalDateTime.now());
-			reservation1.setStartDateTime(LocalDateTime.now());
-			reservation1.setEndDateTime(LocalDateTime.now());
-			reservation1.setOrderNumber("1");
-			//reservation1.setConfirmationCode("c234512");
-			reservation1.setSerialNumber("1234567");
-			reservation1.setUser(newUser);
-			reservationRepository.save(reservation1);
-			Reservation reservation2 = new Reservation();
-			reservation2.setAmount(new BigDecimal(123.5));
-			reservation2.setBookingDate(LocalDateTime.now());
-			reservation2.setStartDateTime(LocalDateTime.now());
-			reservation2.setEndDateTime(LocalDateTime.now().plusDays(1));
-			reservation2.setSerialNumber("1234568");
-			reservation2.setOrderNumber("1");
-			//reservation2.setConfirmationCode("c234513");
-			reservation2.setUser(newUser2);
-			reservationRepository.save(reservation2);
+			/*
+			 * Reservation reservation1 = new Reservation(); reservation1.setAmount(new
+			 * BigDecimal(123.5)); reservation1.setBookingDate(LocalDateTime.now());
+			 * reservation1.setStartDateTime(LocalDateTime.now());
+			 * reservation1.setEndDateTime(LocalDateTime.now());
+			 * reservation1.setOrderNumber("1");
+			 * //reservation1.setConfirmationCode("c234512");
+			 * reservation1.setSerialNumber("1234567"); reservation1.setUser(newUser);
+			 * reservationRepository.save(reservation1); Reservation reservation2 = new
+			 * Reservation(); reservation2.setAmount(new BigDecimal(123.5));
+			 * reservation2.setBookingDate(LocalDateTime.now());
+			 * reservation2.setStartDateTime(LocalDateTime.now());
+			 * reservation2.setEndDateTime(LocalDateTime.now().plusDays(1));
+			 * reservation2.setSerialNumber("1234568"); reservation2.setOrderNumber("1");
+			 * //reservation2.setConfirmationCode("c234513");
+			 * reservation2.setUser(newUser2); reservationRepository.save(reservation2);
+			 */
 		}
 	}
 }
