@@ -145,7 +145,7 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 			reservation1.setStartDateTime(LocalDateTime.now());
 			reservation1.setEndDateTime(LocalDateTime.now());
 			reservation1.setOrderNumber("1");
-			reservation1.setConfirmationCode("c234512");
+			//reservation1.setConfirmationCode("c234512");
 			reservation1.setSerialNumber("1234567");
 			reservation1.setUser(newUser);
 			reservationRepository.save(reservation1);
@@ -156,7 +156,7 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 			reservation2.setEndDateTime(LocalDateTime.now().plusDays(1));
 			reservation2.setSerialNumber("1234568");
 			reservation2.setOrderNumber("1");
-			reservation2.setConfirmationCode("c234513");
+			//reservation2.setConfirmationCode("c234513");
 			reservation2.setUser(newUser2);
 			reservationRepository.save(reservation2);
 		}

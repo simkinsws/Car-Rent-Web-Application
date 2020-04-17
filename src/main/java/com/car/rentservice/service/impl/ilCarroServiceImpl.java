@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.car.rentservice.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +19,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.car.rentservice.dto.BookedCarsOutputDTO;
+import com.car.rentservice.dto.BookedPeriodDTO;
+import com.car.rentservice.dto.BookedPeriodsDTO;
+import com.car.rentservice.dto.BookedPersonOutputDTO;
+import com.car.rentservice.dto.CarInputDTO;
+import com.car.rentservice.dto.CarOutputDTO;
+import com.car.rentservice.dto.CarOwnerOutputDTO;
+import com.car.rentservice.dto.CommentInputDTO;
+import com.car.rentservice.dto.CommentsOutputDTO;
+import com.car.rentservice.dto.OwnerOutputDTO;
+import com.car.rentservice.dto.PaymentConfirmInputDTO;
+import com.car.rentservice.dto.PickUpPlaceDTO;
+import com.car.rentservice.dto.ReservationInputDTO;
+import com.car.rentservice.dto.ReservationOutputDTO;
+import com.car.rentservice.dto.ResponseModel;
+import com.car.rentservice.dto.UpdateUserInputDTO;
+import com.car.rentservice.dto.UserSuccessResponseDTO;
 import com.car.rentservice.modal.Car;
 import com.car.rentservice.modal.Comments;
 import com.car.rentservice.modal.PickUpPlace;
@@ -31,8 +47,7 @@ import com.car.rentservice.repositories.PickUpPlaceRepository;
 import com.car.rentservice.repositories.ReservationRepository;
 import com.car.rentservice.repositories.UserRepository;
 import com.car.rentservice.service.ilCarroService;
-
-import javax.xml.ws.Response;
+import com.car.rentservice.utils.CommonConstants;
 
 @Service
 public class ilCarroServiceImpl implements ilCarroService {
@@ -396,15 +411,6 @@ public class ilCarroServiceImpl implements ilCarroService {
 		}
 	}
 
-//	@Override
-//	public ResponseModel searchCar(String city, LocalDateTime startDateTime, LocalDateTime endDateTime
-//	,int minAmount, int maxAmount) {
-//		List<Car> carsByCity = carRepository.searchCar(city,startDateTime,null, minAmount,maxAmount);
-//		ResponseModel responseModel = new ResponseModel();
-//		responseModel.setDataList(new ArrayList<>(toCarOwnerListOutputDTO(carsByCity)));
-//		return responseModel;
-//	}
-
 	@Override
 	public ResponseModel searchCarByFilters(String make, String modal, String year, String engine, String fuel,
 			String gear, String wheelsDrive) {
@@ -464,42 +470,93 @@ public class ilCarroServiceImpl implements ilCarroService {
 	}
 
 	@Override
-	public ResponseModel makeReservation(String serialNumber, ReservationInputDTO reservationInputDTO) {
+	public ResponseModel makeReservation(String serialNumber, ReservationInputDTO reservationInputDTO,
+			String userEmail) {
 		ResponseModel responseModel = new ResponseModel();
-		User user = userRepository.findByEmail(reservationInputDTO.getBookedPerson().getEmail());
-		if(user == null) {
-			responseModel.setMessage("User not found");
-			responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+		try {
+			User user = userRepository.findByEmail(reservationInputDTO.getBookedPerson().getEmail());
+			if (user == null) {
+				responseModel.setMessage("User not found");
+				responseModel.setStatus(HttpStatus.NOT_FOUND.toString());
+				responseModel.setDataList(null);
+				return responseModel;
+			} else {
+				Car car = carRepository.findBySerialNumber(serialNumber)
+						.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Car Not Found"));
+
+				if (car != null && userEmail.equals(car.getUser().getEmail())) {
+					responseModel.setMessage("You cannot book your own car");
+					responseModel.setStatus(HttpStatus.CONFLICT.toString());
+					responseModel.setDataList(null);
+					return responseModel;
+				}
+
+				List<Reservation> reservationList = reservationRepository.findBySerialNumber(serialNumber);
+				if (reservationList != null && !reservationList.isEmpty()) {
+					for (Reservation reservation : reservationList) {
+						if (LocalDateTime.now().isBefore(reservation.getEndDateTime())) {
+
+							return generateResponse(HttpStatus.CONFLICT.toString(), "Car with Serial Number"
+									+ serialNumber + "cannot be booked, as it is already reserved", null);
+						}
+					}
+				}
+
+				BigDecimal amount = new BigDecimal(ChronoUnit.DAYS.between(reservationInputDTO.getStartDateTime(),
+						reservationInputDTO.getEndDateTime()) * car.getPricePerDay().longValue());
+
+				Reservation reservation = new Reservation();
+				reservation.setAmount(amount);
+				reservation.setBookingDate(LocalDateTime.now());
+				// reservation.setConfirmationCode("CONF" +
+				// reservationRepository.findNextOrderNumberSequence());
+				reservation.setStartDateTime(reservationInputDTO.getStartDateTime());
+				reservation.setEndDateTime(reservationInputDTO.getEndDateTime());
+				reservation.setOrderNumber("NUMBER" + reservationRepository.findNextOrderNumberSequence());
+				reservation.setPaid(false);
+				reservation.setUser(user);
+				reservation.setSerialNumber(serialNumber);
+				reservationRepository.save(reservation);
+				carRepository.save(car);
+				userRepository.save(user);
+				responseModel.setDataList(new ArrayList<>(Arrays.asList(toReservationOutputDto(reservation))));
+				return responseModel;
+			}
+		} catch (Exception e) {
+			responseModel.setMessage("An Exception occurs: " + e.getMessage());
+			responseModel.setStatus(HttpStatus.BAD_REQUEST.toString());
+			responseModel.setDataList(null);
+			return responseModel;
 		}
-		Car car = carRepository.findBySerialNumber(serialNumber).orElseThrow(() -> new
-				ResponseStatusException(HttpStatus.NOT_FOUND, "Car Not Found"));
-//		BigDecimal pricePerDay = new BigDecimal(car.getPricePerDay().longValue());
-		BigDecimal amount = new BigDecimal(ChronoUnit.DAYS.between(reservationInputDTO.getStartDateTime(),
-				reservationInputDTO.getEndDateTime()) * car.getPricePerDay().longValue());
 
-		Reservation reservation =
-				new Reservation();
-		reservation.setAmount(amount);
-		reservation.setBookingDate(LocalDateTime.now());
-		reservation.setConfirmationCode("CONF"+reservationRepository.findNextOrderNumberSequence());
-		reservation.setStartDateTime(reservationInputDTO.getStartDateTime());
-		reservation.setEndDateTime(reservationInputDTO.getEndDateTime());
-		reservation.setOrderNumber("NUMBER"+reservationRepository.findNextOrderNumberSequence());
-		reservation.setPaid(false);
-		reservation.setUser(user);
+	}
 
-		reservation.setSerialNumber(serialNumber);
-
-		reservationRepository.save(reservation);
-		carRepository.save(car);
-		userRepository.save(user);
-		responseModel.setDataList(new ArrayList<>(Arrays.asList(toReservationOutputDto(reservation))));
-		return responseModel;
+	public HttpStatus paymentConfirmation(PaymentConfirmInputDTO confirmInputDTO) {
+		ResponseModel responseModel = new ResponseModel();
+		try {
+			Reservation reservation = reservationRepository.findByOrderNumber(confirmInputDTO.getOrderNumber());
+			if (confirmInputDTO.getConfirmationCode().equals(CommonConstants.SUCCESS)) {
+				reservation.setConfirmationCode(confirmInputDTO.getConfirmationCode());
+				reservationRepository.save(reservation);
+				return HttpStatus.OK;
+			} else {
+				responseModel.setStatus(HttpStatus.CONFLICT.toString());
+				reservation.setConfirmationCode(confirmInputDTO.getConfirmationCode());
+				reservationRepository.save(reservation);
+				return HttpStatus.CONFLICT;
+				// Delete the reservation entry
+				// Delete the booking entry from car
+				// Delete the booking entry from user
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return HttpStatus.BAD_REQUEST;
+		}
 	}
 
 	private ReservationOutputDTO toReservationOutputDto(Reservation reservation) {
-		return new ReservationOutputDTO(reservation.getOrderNumber(),reservation.getConfirmationCode(),
-				reservation.getAmount(),reservation.getBookingDate());
+		return new ReservationOutputDTO(reservation.getOrderNumber(), reservation.getAmount(),
+				reservation.getBookingDate());
 	}
 
 	private List<CarOwnerOutputDTO> toCarOwnerListOutputDTO(Page<Car> carList) {

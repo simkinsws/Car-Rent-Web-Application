@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ReservationOutputDTO {
 
-    private final String orderNumber;
-    private final String confirmationCode;
+    private final String orderNumber;    
     private final BigDecimal amount;
     private final LocalDateTime bookingDate;
 }

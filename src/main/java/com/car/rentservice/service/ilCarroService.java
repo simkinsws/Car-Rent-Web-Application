@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.car.rentservice.dto.*;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 
 public interface ilCarroService {
 	ResponseModel updateUser(String email, UpdateUserInputDTO updateUserInputDTO);
@@ -42,5 +43,7 @@ public interface ilCarroService {
 
 	ResponseModel searchByCoordinates(Double latitude, Double longitude, Double radius, Pageable pageable);
 
-	ResponseModel makeReservation(String serialNumber, ReservationInputDTO reservationInputDTO);
+	ResponseModel makeReservation(String serialNumber, ReservationInputDTO reservationInputDTO, String userEmailer);
+
+	HttpStatus paymentConfirmation(PaymentConfirmInputDTO confirmInputDTO);
 }

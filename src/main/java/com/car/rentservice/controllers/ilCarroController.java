@@ -5,6 +5,7 @@ import java.util.Map;
 import com.car.rentservice.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -107,9 +108,16 @@ public class ilCarroController {
 				pageable);
 	}
 
-	@PostMapping("/makeReservation/{serialNumber}")
+	@PostMapping("/car/reservation/{serialNumber}")
 	public ResponseModel makeReservation(@RequestBody ReservationInputDTO reservationInputDTO,
-										 @PathVariable String serialNumber) {
-		return ilCarroService.makeReservation(serialNumber, reservationInputDTO);
+			@PathVariable String serialNumber, Authentication authentication) {
+		return ilCarroService.makeReservation(serialNumber, reservationInputDTO, authentication.getName());
+	}
+
+	// Need to create a Webhook end point, which accepts the Json in the form of
+	// string. Based on this perform the logic and update the payment status.
+	@PostMapping("/reservation/confirm")
+	public HttpStatus paymentConfirmation(@RequestBody PaymentConfirmInputDTO confirmInputDTO) {
+		return ilCarroService.paymentConfirmation(confirmInputDTO);
 	}
 }

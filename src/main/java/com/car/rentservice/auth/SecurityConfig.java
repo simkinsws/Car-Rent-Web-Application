@@ -57,8 +57,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.OPTIONS).permitAll().antMatchers("/swagger-ui.html").permitAll()
 				.antMatchers("/webjars/**", "/swagger-resources/**", "/v2/api-docs", "/configuration/ui",
 						"/configuration/security")
-				.permitAll().antMatchers("/registration", "/search/**","/car/get/**").permitAll().anyRequest().authenticated().and()
-				.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+				.permitAll().antMatchers("/registration", "/search/**", "/car/get/**", "paymentConfirmation/**")
+				.permitAll().anyRequest().authenticated().and().exceptionHandling()
+				.authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 		// Add a filter to validate the tokens with every request
