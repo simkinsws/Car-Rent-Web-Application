@@ -67,6 +67,22 @@ public class ilCarroServiceImpl implements ilCarroService {
 	private ReservationRepository reservationRepository;
 
 	@Override
+	public ResponseModel getUser(String email) {
+		try {
+			User user = userRepository.findByEmail(email);
+			if (user == null) {
+				return generateResponse(HttpStatus.CONFLICT.toString(), "User does not exists", null);
+			}
+			return generateResponse(HttpStatus.OK.toString(), "User found",
+					new ArrayList<>(Arrays.asList(toUserSuccessResponseDto(user))));
+
+		} catch (Exception e) {
+			return generateResponse(HttpStatus.UNAUTHORIZED.toString(), "Unexpected exception occurs:" + e.toString(),
+					null);
+		}
+	}
+
+	@Override
 	@Transactional
 	public ResponseModel updateUser(String email, UpdateUserInputDTO updateUserInputDTO) {
 		try {
@@ -80,7 +96,7 @@ public class ilCarroServiceImpl implements ilCarroService {
 			user.setPhotoUrl(updateUserInputDTO.getPhotoUrl());
 
 			userRepository.save(user);
-			return generateResponse(HttpStatus.OK.toString(), "Car is added",
+			return generateResponse(HttpStatus.OK.toString(), "User is updated",
 					new ArrayList<>(Arrays.asList(toUserSuccessResponseDto(user))));
 
 		} catch (Exception e) {

@@ -22,6 +22,11 @@ public class ilCarroController {
 	@Autowired
 	private ilCarroService ilCarroService;
 
+	@GetMapping("/user")
+	public ResponseModel getUser(Authentication authentication) {
+		return ilCarroService.getUser(authentication.getName());
+	}
+
 	@DeleteMapping("/user")
 	public ResponseModel deleteUser(Authentication authentication) {
 		return ilCarroService.deleteUser(authentication.getName());

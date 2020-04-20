@@ -46,4 +46,6 @@ public interface ilCarroService {
 	ResponseModel makeReservation(String serialNumber, ReservationInputDTO reservationInputDTO, String userEmailer);
 
 	HttpStatus paymentConfirmation(PaymentConfirmInputDTO confirmInputDTO);
+
+	ResponseModel getUser(String name);
 }
