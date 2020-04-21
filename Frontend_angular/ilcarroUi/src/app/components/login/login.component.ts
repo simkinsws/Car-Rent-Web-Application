@@ -21,8 +21,8 @@ export class LoginComponent implements OnInit {
     this.authService.callLogin(this.loginModel).subscribe(
       res => {
         if (res.status === 200) {
-          localStorage.setItem('authToken', res.body.token); //Store those in browser cookies, so user can go back to this session as long as they don't clear cookies
-          localStorage.setItem('userEmail', this.loginModel.email);
+          sessionStorage.setItem('authToken', res.body.token); //Store those in browser cookies, so user can go back to this session as long as they don't clear cookies
+          sessionStorage.setItem('userEmail', this.loginModel.email);
           this.router.navigate(['/profile']).then(() => {
             window.location.reload();
           }); //navigate to next page         

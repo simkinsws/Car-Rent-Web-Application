@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit {
   constructor(private authService: AuthServiceService, private router: Router) { }
 
   ngOnInit() {
-    this.authToken = localStorage.getItem("authToken");
+    this.authToken = sessionStorage.getItem("authToken");
     if (this.authToken != null) {
       this.isLoggedIn = true;
     }
@@ -24,8 +24,8 @@ export class HeaderComponent implements OnInit {
   logout() {
     this.isLoggedIn = false;
     console.log(this.isLoggedIn);
-    localStorage.removeItem("authToken");
-    localStorage.removeItem("userEmail");
+    sessionStorage.removeItem("authToken");
+    sessionStorage.removeItem("userEmail");
     this.router.navigate(['/login']).then(() => {
       window.location.reload();
     });

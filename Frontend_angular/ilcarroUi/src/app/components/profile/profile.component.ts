@@ -21,7 +21,7 @@ export class ProfileComponent implements OnInit {
       response => {
         this.user.firstName = response['dataList'][0].firstName;
         this.user.secondName = response['dataList'][0].secondName;
-        this.user.email = localStorage.getItem("userEmail");
+        this.user.email = sessionStorage.getItem("userEmail");
       }, error => {
         console.log(error);
         this.router.navigate(['/profile'])

@@ -8,7 +8,7 @@ import { environment } from '../../environments/environment';
 export class UserService {
   authToken;
   constructor(private http: HttpClient) {
-    this.authToken = localStorage.getItem('authToken');
+    this.authToken = sessionStorage.getItem('authToken');
   }
 
   getUser() {
