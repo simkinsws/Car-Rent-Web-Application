@@ -3,9 +3,13 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ilcarroUi": {
+    "ui": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -13,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ilcarroUi",
+            "outputPath": "dist/ui",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -24,13 +28,9 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/bootstrap/dist/css/bootstrap.css",
-              "src/styles.css"
+              "src/styles.scss"
             ],
-            "scripts": [
-              "./node_modules/jquery/dist/jquery.js",
-              "./node_modules/bootstrap/dist/js/bootstrap.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -67,18 +67,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "ilcarroUi:build"
+            "browserTarget": "ui:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "ilcarroUi:build:production"
+              "browserTarget": "ui:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ilcarroUi:build"
+            "browserTarget": "ui:build"
           }
         },
         "test": {
@@ -93,7 +93,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }
@@ -115,15 +115,15 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "ilcarroUi:serve"
+            "devServerTarget": "ui:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "ilcarroUi:serve:production"
+              "devServerTarget": "ui:serve:production"
             }
           }
         }
       }
     }},
-  "defaultProject": "ilcarroUi"
+  "defaultProject": "ui"
 }
