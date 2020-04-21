@@ -1,16 +1,23 @@
 import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {Router} from "@angular/router";
-import {Observable} from "rxjs";
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-
-  constructor(private http:HttpClient) { }
+  authToken;
+  constructor(private http: HttpClient) {
+    this.authToken = localStorage.getItem('authToken');
+  }
 
   getUser() {
-    return this.http.get('http://localhost:8080/user/');
+    return this.http.get(environment.apiTarget + '/user', {
+      headers: new HttpHeaders(
+        {
+          'Authorization': this.authToken,
+          'Accept': '*/*',
+        }),
+    });
   }
 }

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, observable, Observable, throwError} from "rxjs";
-import {User} from "../models/user";
-import {HttpClient} from "@angular/common/http";
-import {LoginModel} from "../models/login-model";
-import {Auth} from "../models/auth";
-import {map} from "rxjs/operators";
+import { BehaviorSubject, observable, Observable, throwError } from "rxjs";
+import { User } from "../models/user";
+import { HttpClient } from "@angular/common/http";
+import { LoginModel } from "../models/login-model";
+import { Auth } from "../models/auth";
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ import {map} from "rxjs/operators";
 export class AuthServiceService {
   public currentUser: Observable<User>;
   private currentUserSubject: BehaviorSubject<User>;
-  constructor(private http:HttpClient) {
+  constructor(private http: HttpClient) {
     // this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
     // this.currentUser = this.currentUserSubject.asObservable();
   }
@@ -22,25 +22,17 @@ export class AuthServiceService {
   }
 
   register(user: User): Observable<any> {
-    return this.http.post('http://localhost:8080/registration', user, { observe: 'response'});
-}
+    return this.http.post(environment.apiTarget + '/registration', user, { observe: 'response' });
+  }
 
   public login(loginModel: LoginModel): Observable<any> {
-    return this.http.post<Auth>('http://localhost:8080/login', loginModel, {observe: 'response'});
+    return this.http.post<Auth>(environment.apiTarget + '/login', loginModel, { observe: 'response' });
   }
 
   public callLogin(loginModel: LoginModel) {
 
     // @ts-ignore
-    this.login(loginModel).subscribe(this.setSession, this.handleError);
-  }
-
-  private setSession(authResult: Auth) {
-    if (authResult.status === 'true') {
-      localStorage.setItem('Authorization', authResult.token);
-    } else {
-      return throwError('invalid username/password');
-    }
+    return this.login(loginModel);
   }
 
   handleError(err) {

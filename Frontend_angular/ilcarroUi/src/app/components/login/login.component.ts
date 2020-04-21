@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {AuthServiceService} from "../../services/auth-service.service";
-import {LoginModel} from "../../models/login-model";
-import {Router} from "@angular/router";
+import { AuthServiceService } from "../../services/auth-service.service";
+import { LoginModel } from "../../models/login-model";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -18,8 +18,20 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    this.authService.callLogin(this.loginModel);
-    this.router.navigate(['/profile']);
+    this.authService.callLogin(this.loginModel).subscribe(
+      res => {
+        if (res.status === 200) {
+          localStorage.setItem('authToken', res.body.token); //Store those in browser cookies, so user can go back to this session as long as they don't clear cookies
+          localStorage.setItem('userEmail', this.loginModel.email);
+          this.router.navigate(['/profile']).then(() => {
+            window.location.reload();
+          }); //navigate to next page         
+        } else {
+          alert("Invalid Login");
+        }
+      }, error => {
+        alert("Invalid Login");
+      }
+    );
   }
-
 }

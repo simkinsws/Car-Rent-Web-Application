@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {AuthServiceService} from "../../services/auth-service.service";
+import { AuthServiceService } from "../../services/auth-service.service";
+import { Router } from "@angular/router";
 
 @Component({
   selector: 'app-header',
@@ -8,9 +9,26 @@ import {AuthServiceService} from "../../services/auth-service.service";
 })
 export class HeaderComponent implements OnInit {
 
-  constructor(private authService: AuthServiceService) { }
+  isLoggedIn;
+  authToken
+
+  constructor(private authService: AuthServiceService, private router: Router) { }
 
   ngOnInit() {
+    this.authToken = localStorage.getItem("authToken");
+    if (this.authToken != null) {
+      this.isLoggedIn = true;
+    }
+  }
+
+  logout() {
+    this.isLoggedIn = false;
+    console.log(this.isLoggedIn);
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userEmail");
+    this.router.navigate(['/login']).then(() => {
+      window.location.reload();
+    });
   }
 
 }
