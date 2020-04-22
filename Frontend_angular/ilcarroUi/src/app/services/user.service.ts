@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { retry } from 'rxjs/operators';
+import { Car } from '../models/car';
 
 @Injectable({
   providedIn: 'root'
@@ -50,5 +51,9 @@ export class UserService {
   getLatestComments() {
     return this.http.get(environment.apiTarget + '/comments', { observe: 'response' })
       .pipe(retry(1));
+  }
+  searchCar(postData) {
+    //need to pass dynamic pagination value
+    return this.http.post<Car>(environment.apiTarget + '/search?' + 'page=0&size=10', postData);
   }
 }

@@ -18,8 +18,8 @@ export class RegisterComponent implements OnInit {
 
   onSubmit() {
       this.authServiceService.register(this.user).subscribe(data => {
-        if(data.body.message === 'User already exists.') {
-            this.errorMessage = "Email already exists.";
+        if (data.body.message === 'User already exists.') {
+            this.errorMessage = 'Email already exists.';
         } else {
           this.errorMessage = null;
           this.router.navigate(['/login']);

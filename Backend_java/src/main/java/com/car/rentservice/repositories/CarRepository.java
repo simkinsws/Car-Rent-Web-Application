@@ -1,7 +1,11 @@
 package com.car.rentservice.repositories;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -112,12 +116,22 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 										criteriaBuilder.equal(pickUpPlace.get("placeName"), filterData.getValue())));
 							}
 							if (filterData.getKey().equals("startDateTime")) {
-								predicates.add(criteriaBuilder
-										.and(criteriaBuilder.equal(user.get("startDateTime"), filterData.getValue())));
+								try {
+									predicates.add(criteriaBuilder.and(criteriaBuilder.equal(user.get("startDateTime"),
+											converDate(filterData.getValue()))));
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 							if (filterData.getKey().equals("endDateTime")) {
-								predicates.add(criteriaBuilder
-										.and(criteriaBuilder.equal(user.get("endDateTime"), filterData.getValue())));
+								try {
+									predicates.add(criteriaBuilder.and(criteriaBuilder.equal(user.get("endDateTime"),
+											converDate(filterData.getValue()))));
+								} catch (ParseException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
 							}
 							if (filterData.getKey().equals("minAmount")) {
 								predicates.add(criteriaBuilder.and(criteriaBuilder
@@ -168,4 +182,10 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 	@Query("SELECT c FROM Car c INNER JOIN PickUpPlace m ON c.id = m.id WHERE " + HAVERSINE_PART
 			+ " < :distance ORDER BY " + HAVERSINE_PART + " DESC")
 	List<Car> searchByCoordinates(Double latitude, Double longitude, Double distance, Pageable pageable);
+
+	default LocalDateTime converDate(String providedStringDate) throws ParseException {
+		Date providedDate = new SimpleDateFormat("dd/MM/yyyy").parse(providedStringDate);
+		LocalDateTime ldt = LocalDateTime.ofInstant(providedDate.toInstant(), ZoneId.systemDefault());
+		return ldt;
+	}
 }

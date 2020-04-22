@@ -86,6 +86,30 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 			newUser2.setReservations(new ArrayList<>());
 			userRepository.save(newUser2);
 
+			User newUser3 = new User();
+			newUser3.setEmail("nir.simkin3@gmail.com");
+			newUser3.setFirstName("nir2");
+			newUser3.setSecondName("simkin2");
+			newUser3.setPhotoUrl("img2.com");
+			newUser3.setPhone("05240702152");
+			newUser3.setPassword(bCryptEncoder.encode("12345"));
+			newUser3.setCars(new ArrayList<>());
+			newUser3.setComments(new ArrayList<>());
+			newUser3.setReservations(new ArrayList<>());
+			userRepository.save(newUser3);
+
+			User newUser4 = new User();
+			newUser4.setEmail("nir.simkin4@gmail.com");
+			newUser4.setFirstName("nir2");
+			newUser4.setSecondName("simkin2");
+			newUser4.setPhotoUrl("img2.com");
+			newUser4.setPhone("05240702152");
+			newUser4.setPassword(bCryptEncoder.encode("12345"));
+			newUser4.setCars(new ArrayList<>());
+			newUser4.setComments(new ArrayList<>());
+			newUser4.setReservations(new ArrayList<>());
+			userRepository.save(newUser4);
+
 			PickUpPlace pickUpPlace = new PickUpPlace();
 			pickUpPlace.setPlaceId("123");
 			pickUpPlace.setPlaceName("netanya");
@@ -123,7 +147,8 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 			car1.setDistanceIncluded(133);
 			car1.setAbout("About car");
 			car1.setPickUpPlace(pickUpPlace);
-			car1.setImageUrl(Arrays.asList("img.com", "img2.com"));
+			car1.setImageUrl(Arrays
+					.asList("https://images.auto.co.il/Attachment/Gallery/227750/1588670/BMW-i8%203.jpg?width=600"));
 			car1.setUser(newUser);
 			carRepository.save(car1);
 			Car car2 = new Car();
@@ -144,9 +169,54 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 			car2.setDistanceIncluded(133);
 			car2.setAbout("About car2");
 			car2.setPickUpPlace(pickUpPlace2);
-			car2.setImageUrl(Arrays.asList("img.com", "img4.com"));
+			car2.setImageUrl(Arrays
+					.asList("https://images.auto.co.il/Attachment/Gallery/227750/1588670/BMW-i8%203.jpg?width=600"));
 			car2.setUser(newUser2);
 			carRepository.save(car2);
+
+			Car car3 = new Car();
+			car3.setSerialNumber("1234569");
+			car3.setMake("Mercedes");
+			car3.setModal("Mercedes benz");
+			car3.setYear("2002");
+			car3.setEngine("Engine V6");
+			car3.setFuel("fuel");
+			car3.setGear("VWR");
+			car3.setWheelsDrive("RWD");
+			car3.setDoors(4);
+			car3.setSeats(5);
+			car3.setFuelConsumption(new BigDecimal(13.5));
+			car3.setFeatures(Arrays.asList("Try1", "Try2"));
+			car3.setPricePerDay(new BigDecimal(40.5));
+			car3.setDistanceIncluded(133);
+			car3.setAbout("About car2");
+			car3.setPickUpPlace(pickUpPlace2);
+			car3.setImageUrl(Arrays
+					.asList("https://images.auto.co.il/Attachment/Gallery/227750/1588670/BMW-i8%203.jpg?width=600"));
+			car3.setUser(newUser3);
+			carRepository.save(car3);
+
+			Car car4 = new Car();
+			car4.setSerialNumber("1234561");
+			car4.setMake("Mercedes");
+			car4.setModal("Mercedes benz");
+			car4.setYear("2002");
+			car4.setEngine("Engine V6");
+			car4.setFuel("fuel");
+			car4.setGear("VWR");
+			car4.setWheelsDrive("RWD");
+			car4.setDoors(4);
+			car4.setSeats(5);
+			car4.setFuelConsumption(new BigDecimal(13.5));
+			car4.setFeatures(Arrays.asList("Try1", "Try2"));
+			car4.setPricePerDay(new BigDecimal(40.5));
+			car4.setDistanceIncluded(133);
+			car4.setAbout("About car2");
+			car4.setPickUpPlace(pickUpPlace2);
+			car4.setImageUrl(Arrays
+					.asList("https://images.auto.co.il/Attachment/Gallery/227750/1588670/BMW-i8%203.jpg?width=600"));
+			car4.setUser(newUser4);
+			carRepository.save(car4);
 
 			Reservation reservation1 = new Reservation();
 			reservation1.setAmount(new BigDecimal(123.5));
@@ -168,6 +238,17 @@ class DataInsertingCommandLineRunner implements CommandLineRunner {
 			// reservation2.setConfirmationCode("c234513");
 			reservation2.setUser(newUser2);
 			reservationRepository.save(reservation2);
+
+			Reservation reservation3 = new Reservation();
+			reservation3.setAmount(new BigDecimal(123.5));
+			reservation3.setBookingDate(LocalDateTime.now());
+			reservation3.setStartDateTime(LocalDateTime.now());
+			reservation3.setEndDateTime(LocalDateTime.now().plusDays(1));
+			reservation3.setSerialNumber("1234568");
+			reservation3.setOrderNumber("1");
+			// reservation2.setConfirmationCode("c234513");
+			reservation3.setUser(newUser2);
+			reservationRepository.save(reservation3);
 
 		}
 	}

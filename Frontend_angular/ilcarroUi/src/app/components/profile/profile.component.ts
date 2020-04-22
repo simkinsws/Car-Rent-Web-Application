@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user';
-import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
@@ -20,18 +19,16 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.userService.getUser().subscribe(response => {
       this.user.email = localStorage.getItem('userEmail');
-      // @ts-ignore
+        // @ts-ignore
       this.user.firstName = response.dataList[0].firstName;
-      // @ts-ignore
+        // @ts-ignore
       this.user.secondName = response.dataList[0].secondName;
-      // @ts-ignore
-      console.log(response.dataList[0]);
-    }, error => {
-      this.errorMessage = 'Some error while getting User profile';
-    });
+      }, error => {
+        this.errorMessage = 'Some error while getting User profile';
+      });
   }
 
   editUser() {
-    sessionStorage.setItem("editUser", JSON.stringify(this.user));
+    sessionStorage.setItem('editUser', JSON.stringify(this.user));
   }
 }

@@ -6,12 +6,16 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { SettingsComponent } from './components/profile/settings/settings.component';
 import {AuthGuardGuard} from './services/guards/auth-guard.guard';
 import {AuthBlockGuard} from './services/guards/auth-block.guard';
+import {MainComponent} from './components/main/main.component';
+import {TermsComponent} from './components/terms/terms.component';
 
 
 const routes: Routes = [
-  { path: '', component: RegisterComponent },
-  { path: 'registration', component: RegisterComponent },
-  { path: 'login', component: LoginComponent },
+  { path: '', component: MainComponent },
+  { path: 'main', component: MainComponent },
+  { path: 'terms', component: TermsComponent},
+  { path: 'registration', component: RegisterComponent, canActivate: [AuthBlockGuard] },
+  { path: 'login', component: LoginComponent, canActivate: [AuthBlockGuard] },
   { path: 'profile', component: ProfileComponent , canActivate: [AuthGuardGuard] },
   { path: 'profile/settings', component: SettingsComponent, canActivate: [AuthGuardGuard] }
 ];

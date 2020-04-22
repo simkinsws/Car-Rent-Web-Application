@@ -13,6 +13,9 @@ import {MostPopularCarsComponent} from './components/most-popular-cars/most-popu
 import {LoginComponent} from './components/login/login.component';
 import {ProfileComponent} from './components/profile/profile.component';
 import {SettingsComponent} from './components/profile/settings/settings.component';
+import {PromoBannerComponent} from './components/promo-banner/promo-banner.component';
+import {LastFeedsComponent} from './components/last-feeds/last-feeds.component';
+import {MainComponent} from './components/main/main.component';
 
 @NgModule({
   declarations: [
@@ -23,16 +26,22 @@ import {SettingsComponent} from './components/profile/settings/settings.componen
     LoginComponent,
     ProfileComponent,
     SettingsComponent,
+    MostPopularCarsComponent,
+    PromoBannerComponent,
+    LastFeedsComponent,
+    MainComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule,
+    ComponentsModule
+  ],
+  providers: [],
+  exports: [
     MostPopularCarsComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        FormsModule,
-        HttpClientModule,
-        ComponentsModule
-    ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

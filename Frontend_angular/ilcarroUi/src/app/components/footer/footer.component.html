@@ -14,22 +14,22 @@
       </div>
       <div class="col-xl-6">
         <ul class="social-links list-unstyled">
-          <li><a href="#"><i class="fa fa-facebook-f"></i></a></li>
-          <li><a href="#"><i class="fa fa-send"></i></a></li>
-          <li><a href="#"><i class="fa fa-vk"></i></a></li>
-          <li><a href="#"><i class="fa fa-instagram"></i></a></li>
-          <li><a href="#"><i class="fa fa-hashtag"></i></a></li>
+          <li><a routerLink="/"><i class="fa fa-facebook-f"></i></a></li>
+          <li><a routerLink="/"><i class="fa fa-send"></i></a></li>
+          <li><a routerLink="/"><i class="fa fa-vk"></i></a></li>
+          <li><a routerLink="/"><i class="fa fa-instagram"></i></a></li>
+          <li><a routerLink="/"><i class="fa fa-hashtag"></i></a></li>
         </ul>
       </div>
     </div>
     <div class="row">
       <div class="col-xl-6 offset-xl-6">
         <ul class="footer-navbar-nav">
-          <li><a class="nav-link" routerLink="/search">Search <span class="sr-only">(current)</span></a></li>
-          <li><a class="nav-link" href="#">Let the car work</a></li>
-          <li><a class="nav-link" href="#">Terms of use</a></li>
-          <li><a class="nav-link" routerLink="/registration">Sign up</a></li>
-          <li><a class="nav-link" href="#">Log in</a></li>
+          <li><a class="nav-link" routerLink="/main">Search <span class="sr-only">(current)</span></a></li>
+          <li><a class="nav-link" routerLink="/car">Let the car work</a></li>
+          <li><a class="nav-link" routerLink="/terms">Terms of use</a></li>
+          <li><a class="nav-link" routerLink="/registration" *ngIf="!authService.isLoggedIn()">Sign up</a></li>
+          <li><a class="nav-link" routerLink="/login" *ngIf="!authService.isLoggedIn()">Log in</a></li>
         </ul>
         <div class="footer-detail">
           <div class="footer-top-cities">
