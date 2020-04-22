@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import {retry} from 'rxjs/operators';
+import { retry } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +14,27 @@ export class UserService {
 
   getUser() {
     return this.http.get(environment.apiTarget + '/user', {
-       headers: new HttpHeaders(
+      headers: new HttpHeaders(
+        {
+          Authorization: this.authToken,
+          Accept: '*/*',
+        }),
+    });
+  }
+
+  updateUser(user) {
+    return this.http.put(environment.apiTarget + '/user', user, {
+      headers: new HttpHeaders(
+        {
+          Authorization: this.authToken,
+          Accept: '*/*',
+        }),
+    });
+  }
+
+  deleteUser() {
+    return this.http.delete(environment.apiTarget + '/user', {
+      headers: new HttpHeaders(
         {
           Authorization: this.authToken,
           Accept: '*/*',
@@ -23,12 +43,12 @@ export class UserService {
   }
 
   getMostPopularCars() {
-    return this.http.get(environment.apiTarget + '/car/best', {observe: 'response'})
+    return this.http.get(environment.apiTarget + '/car/best', { observe: 'response' })
       .pipe(retry(1));
   }
 
   getLatestComments() {
-    return this.http.get(environment.apiTarget + '/comments', {observe: 'response'})
+    return this.http.get(environment.apiTarget + '/comments', { observe: 'response' })
       .pipe(retry(1));
   }
 }

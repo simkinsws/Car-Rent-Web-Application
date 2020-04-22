@@ -20,14 +20,18 @@ export class ProfileComponent implements OnInit {
   ngOnInit() {
     this.userService.getUser().subscribe(response => {
       this.user.email = localStorage.getItem('userEmail');
-        // @ts-ignore
+      // @ts-ignore
       this.user.firstName = response.dataList[0].firstName;
-        // @ts-ignore
+      // @ts-ignore
       this.user.secondName = response.dataList[0].secondName;
       // @ts-ignore
       console.log(response.dataList[0]);
-      }, error => {
-        this.errorMessage = 'Some error while getting User profile';
-      });
+    }, error => {
+      this.errorMessage = 'Some error while getting User profile';
+    });
+  }
+
+  editUser() {
+    sessionStorage.setItem("editUser", JSON.stringify(this.user));
   }
 }

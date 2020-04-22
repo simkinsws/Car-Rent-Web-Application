@@ -39,8 +39,10 @@
                     <input type="password" [(ngModel)]="user.password" required #password="ngModel" id="password"
                         name="password" class="form-control">
                 </div>
-                <button type="submit" [disabled]="!f.form.valid" class="btn btn-red btn-yalla">Update User</button>
-                <button type="submit" [disabled]="!f.form.valid" class="btn btn-red btn-yalla">Delete User</button>
+                <button type="submit" [disabled]="!f.form.valid" class="btn btn-red btn-yalla"
+                    (click)="updateUser()">Update User</button>
+                <button type="submit" [disabled]="!f.form.valid" class="btn btn-red btn-yalla"
+                    (click)="deleteUser()">Delete User</button>
             </div>
         </div>
     </form>
