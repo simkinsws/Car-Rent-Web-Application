@@ -10,10 +10,10 @@
           <a class="nav-link" routerLink="/search">Search <span class="sr-only">(current)</span></a>
           <a class="nav-link" routerLink="/main">Let the car work</a>
           <a class="nav-link" routerLink="/terms">Terms of use</a>
-          <a class="nav-link" routerLink="/registration" [hidden]="isLoggedIn">Sign up</a>
-          <a class="nav-link" routerLink="/login" [hidden]="isLoggedIn">Log in</a>
-          <a class="nav-link" routerLink="/profile" [hidden]="!isLoggedIn">Profile</a>
-          <a class="btn" id="logoutBtn" (click)="logout()" [hidden]="!isLoggedIn">Logout</a>
+          <a class="nav-link" routerLink="/registration" *ngIf="!authService.isLoggedIn()">Sign up</a>
+          <a class="nav-link" routerLink="/login" *ngIf="!authService.isLoggedIn()">Log in</a>
+          <a class="nav-link" routerLink="/profile" *ngIf="authService.isLoggedIn()">Profile</a>
+          <a class= "nav-link" routerLink="/login" *ngIf="authService.isLoggedIn()" (click)="authService.logOut()">Logout</a>
         </ul>
       </div>
 

@@ -6,11 +6,13 @@ import { AppComponent } from './app.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { RegisterComponent } from './components/register/register.component';
-import { FormsModule } from "@angular/forms";
-import { HttpClientModule } from "@angular/common/http";
-import { LoginComponent } from './components/login/login.component';
-import { ProfileComponent } from './components/profile/profile.component';
-import { SettingsComponent } from './components/profile/settings/settings.component';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import {ComponentsModule} from './components/components.module';
+import {MostPopularCarsComponent} from './components/most-popular-cars/most-popular-cars.component';
+import {LoginComponent} from './components/login/login.component';
+import {ProfileComponent} from './components/profile/profile.component';
+import {SettingsComponent} from './components/profile/settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -20,14 +22,16 @@ import { SettingsComponent } from './components/profile/settings/settings.compon
     RegisterComponent,
     LoginComponent,
     ProfileComponent,
-    SettingsComponent
+    SettingsComponent,
+    MostPopularCarsComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    FormsModule,
-    HttpClientModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        FormsModule,
+        HttpClientModule,
+        ComponentsModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

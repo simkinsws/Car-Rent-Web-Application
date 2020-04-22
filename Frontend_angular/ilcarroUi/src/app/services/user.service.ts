@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
+import {retry} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -8,16 +9,26 @@ import { environment } from '../../environments/environment';
 export class UserService {
   authToken;
   constructor(private http: HttpClient) {
-    this.authToken = sessionStorage.getItem('authToken');
+    this.authToken = localStorage.getItem('Authorization');
   }
 
   getUser() {
     return this.http.get(environment.apiTarget + '/user', {
-      headers: new HttpHeaders(
+       headers: new HttpHeaders(
         {
-          'Authorization': this.authToken,
-          'Accept': '*/*',
+          Authorization: this.authToken,
+          Accept: '*/*',
         }),
     });
+  }
+
+  getMostPopularCars() {
+    return this.http.get(environment.apiTarget + '/car/best', {observe: 'response'})
+      .pipe(retry(1));
+  }
+
+  getLatestComments() {
+    return this.http.get(environment.apiTarget + '/comments', {observe: 'response'})
+      .pipe(retry(1));
   }
 }

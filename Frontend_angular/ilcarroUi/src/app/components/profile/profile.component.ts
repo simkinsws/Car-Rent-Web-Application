@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from "../../services/user.service";
-import { User } from "../../models/user";
-import { Observable } from "rxjs";
-import { Router } from "@angular/router";
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user';
+import { Observable } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -12,21 +12,22 @@ import { Router } from "@angular/router";
 export class ProfileComponent implements OnInit {
 
   user: User;
+  errorMessage: string;
   constructor(private userService: UserService, private router: Router) {
     this.user = new User();
   }
 
   ngOnInit() {
-    this.userService.getUser().subscribe(
-      response => {
-        this.user.firstName = response['dataList'][0].firstName;
-        this.user.secondName = response['dataList'][0].secondName;
-        this.user.email = sessionStorage.getItem("userEmail");
+    this.userService.getUser().subscribe(response => {
+      this.user.email = localStorage.getItem('userEmail');
+        // @ts-ignore
+      this.user.firstName = response.dataList[0].firstName;
+        // @ts-ignore
+      this.user.secondName = response.dataList[0].secondName;
+      // @ts-ignore
+      console.log(response.dataList[0]);
       }, error => {
-        console.log(error);
-        this.router.navigate(['/profile'])
-        alert("Some error while getting User profile");
-      })
+        this.errorMessage = 'Some error while getting User profile';
+      });
   }
-
 }

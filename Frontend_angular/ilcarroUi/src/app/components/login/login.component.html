@@ -21,6 +21,7 @@
             <input type="password" [(ngModel)]="loginModel.password" required #password="ngModel" id="password"
                    name="password" class="form-control">
           </div>
+          <div class="alert alert-danger" *ngIf="errorMessage">{{errorMessage}}</div>
           <button type="submit" [disabled]="!loginForm.form.valid" class="btn btn-red btn-yalla">Y’alla!</button>
         </div>
       </div>
@@ -28,3 +29,7 @@
     <span class="skewed-red-border"></span>
   </div>
 </div>
+
+<app-promo-banner></app-promo-banner>
+<app-most-popular-cars></app-most-popular-cars>
+<app-last-feeds></app-last-feeds>
