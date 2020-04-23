@@ -1,6 +1,7 @@
 package com.car.rentservice.service.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -249,7 +250,7 @@ public class ilCarroServiceImpl implements ilCarroService {
 			User user = userRepository.findByEmail(email);
 			List<Reservation> reservationList = reservationRepository.findBySerialNumber(serialNumber);
 			for (Reservation reservation : reservationList) {
-				if (LocalDateTime.now().isBefore(reservation.getEndDateTime())) {
+				if (LocalDate.now().isBefore(reservation.getEndDateTime())) {
 
 					return generateResponse(HttpStatus.CONFLICT.toString(),
 							"Car with Serial Number" + serialNumber + "cannot be deleted, as it is already reserved",
@@ -510,7 +511,7 @@ public class ilCarroServiceImpl implements ilCarroService {
 				List<Reservation> reservationList = reservationRepository.findBySerialNumber(serialNumber);
 				if (reservationList != null && !reservationList.isEmpty()) {
 					for (Reservation reservation : reservationList) {
-						if (LocalDateTime.now().isBefore(reservation.getEndDateTime())) {
+						if (LocalDate.now().isBefore(reservation.getEndDateTime())) {
 
 							return generateResponse(HttpStatus.CONFLICT.toString(), "Car with Serial Number "
 									+ serialNumber + " cannot be booked, as it is already reserved", null);

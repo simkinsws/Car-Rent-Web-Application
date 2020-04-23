@@ -1,7 +1,7 @@
 export class SearchFilters {
   placeName: string;
-  startDateTime: string;
-  endDateTime: string;
+  startDateTime: Date;
+  endDateTime: Date;
   minAmount: string;
   maxAmount: string;
   latitude: string;

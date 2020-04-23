@@ -16,6 +16,7 @@ import {SettingsComponent} from './components/profile/settings/settings.componen
 import {PromoBannerComponent} from './components/promo-banner/promo-banner.component';
 import {LastFeedsComponent} from './components/last-feeds/last-feeds.component';
 import {MainComponent} from './components/main/main.component';
+import {DatePipe} from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,7 @@ import {MainComponent} from './components/main/main.component';
     HttpClientModule,
     ComponentsModule
   ],
-  providers: [],
+  providers: [DatePipe],
   exports: [
     MostPopularCarsComponent
   ],

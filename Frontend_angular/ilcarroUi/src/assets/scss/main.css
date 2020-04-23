@@ -1413,7 +1413,7 @@ input:focus,
   font-size: 1.5rem;
   position: absolute;
   top: 0.75rem;
-  left: 1rem;
+  left: 1.3rem;
   font-weight: 600;
   line-height: 1;
 }
@@ -1421,7 +1421,7 @@ input:focus,
 .welcome-to.search .search-detail .search-block .block-detail .car-price:after {
   content: "per day";
   position: absolute;
-  right: -0.5rem;
+  right: -1.2rem;
   top: 0.25rem;
   -webkit-transform: rotate(-90deg);
   transform: rotate(-90deg);
@@ -1653,7 +1653,11 @@ section.most-popular .owl-stage-outer {
   font-size: 1.35rem;
 }
 
-@media screen and (max-width: 1400px) {
+@media screen and (max-width: 1500px) {
+  .skewed-blocks-wrapper .skew-block-inner .skewed-img {
+    -webkit-clip-path: polygon(0 0, 65% 0, 100% 100%, 35% 100%);
+    clip-path: polygon(0 0, 65% 0, 100% 100%, 35% 100%);
+  }
   .skewed-blocks-wrapper .skew-block-inner .block-detail {
     bottom: -7rem;
   }
@@ -1678,21 +1682,34 @@ section.most-popular .owl-stage-outer {
 }
 
 @media screen and (max-width: 1280px) {
-  .skewed-blocks-wrapper .skew-block-inner {
-    padding-bottom: 0;
-  }
-}
-
-@media screen and (max-width: 1080px) {
-  .skewed-blocks-wrapper .skew-block-inner {
-    padding-bottom: 0;
+  .skewed-blocks-wrapper .most-popular-owl .owl-dots {
+    position: absolute;
+    left: 50%;
+    -webkit-transform: translate(-50%, 0);
+    transform: translate(-50%, 0);
+    width: 100%;
   }
   .skewed-blocks-wrapper .skew-block-inner:after {
     top: -1.5rem;
     height: calc(100% + 4.5rem);
   }
-  .skewed-blocks-wrapper .skewed-img {
-    margin: 0;
+  .skewed-blocks-wrapper .skew-block-inner .skewed-img {
+    -webkit-clip-path: polygon(0 0, 65% 0, 100% 100%, 35% 100%);
+    clip-path: polygon(0 0, 65% 0, 100% 100%, 35% 100%);
+  }
+}
+
+@media screen and (max-width: 1200px) {
+  .skewed-blocks-wrapper .skew-block-inner .skewed-img {
+    margin-left: -11rem;
+    margin-right: -11rem;
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  .skewed-blocks-wrapper .skew-block-inner:after {
+    top: -1.5rem;
+    height: calc(100% + 4.5rem);
   }
   .skewed-blocks-wrapper .block-detail .car-name {
     font-size: 1.75rem;
@@ -1710,6 +1727,22 @@ section.most-popular .owl-stage-outer {
   }
   .skewed-blocks-wrapper .block-detail .car-price:after {
     font-size: 1rem;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .skewed-blocks-wrapper .skew-block-inner .skewed-img {
+    max-width: 80%;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 680px) {
+  .skewed-blocks-wrapper .skew-block-inner .skewed-img {
+    max-width: 100%;
+    margin: 0 auto;
+    -webkit-clip-path: polygon(0 0, 65% 0, 100% 100%, 35% 100%);
+    clip-path: polygon(0 0, 65% 0, 100% 100%, 35% 100%);
   }
 }
 

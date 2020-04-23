@@ -56,5 +56,6 @@ export class AuthServiceService {
   logOut() {
     localStorage.removeItem(this.AUTH_TOKEN);
     localStorage.removeItem('userEmail');
+    // window.location.reload();
   }
 }

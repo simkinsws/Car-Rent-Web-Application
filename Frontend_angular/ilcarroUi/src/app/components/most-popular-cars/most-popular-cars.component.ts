@@ -1,6 +1,7 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import {UserService} from '../../services/user.service';
 import {Car} from '../../models/car';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-most-popular-cars',
@@ -13,15 +14,11 @@ export class MostPopularCarsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getMostPopular();
-  }
-
-  getMostPopular() {
+    $.getScript('../../../assets/js/main.js');
     this.userService.getMostPopularCars().subscribe(data => {
       // @ts-ignore
       this.topCars = data.body.dataList;
       console.log(this.topCars);
     });
   }
-
 }

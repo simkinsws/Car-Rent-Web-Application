@@ -1,11 +1,11 @@
 package com.car.rentservice.repositories;
 
+import java.sql.Date;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -183,9 +183,11 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 			+ " < :distance ORDER BY " + HAVERSINE_PART + " DESC")
 	List<Car> searchByCoordinates(Double latitude, Double longitude, Double distance, Pageable pageable);
 
-	default LocalDateTime converDate(String providedStringDate) throws ParseException {
-		Date providedDate = new SimpleDateFormat("dd/MM/yyyy").parse(providedStringDate);
-		LocalDateTime ldt = LocalDateTime.ofInstant(providedDate.toInstant(), ZoneId.systemDefault());
-		return ldt;
+	default LocalDate converDate(String providedStringDate) throws ParseException {
+
+		DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		LocalDate ld = LocalDate.parse(providedStringDate, DATEFORMATTER);
+		System.out.println(ld);
+		return ld;
 	}
 }
