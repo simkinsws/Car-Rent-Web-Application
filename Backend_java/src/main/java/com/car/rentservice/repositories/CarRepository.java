@@ -1,10 +1,6 @@
 package com.car.rentservice.repositories;
 
-import java.sql.Date;
-import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -13,8 +9,10 @@ import java.util.Optional;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,6 +24,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.car.rentservice.modal.Car;
 import com.car.rentservice.modal.PickUpPlace;
+import com.car.rentservice.modal.Reservation;
 import com.car.rentservice.modal.User;
 
 public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificationExecutor<Car> {
@@ -100,13 +99,14 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 		});
 	}
 
-	default Page<Car> searchCar(Map<String, String> data, Pageable pageable) {
+	default Page<Car> searchCar(Map<String, String> data, List<Long> availableCars, Pageable pageable) {
 		return findAll(new Specification<Car>() {
 			@Override
 			public Predicate toPredicate(Root<Car> root, CriteriaQuery<?> criteriaQuery,
 					CriteriaBuilder criteriaBuilder) {
 				Join<Car, PickUpPlace> pickUpPlace = root.join("pickUpPlace");
 				Join<Car, User> user = root.join("user").join("reservations");
+				Subquery<Reservation> subquery = criteriaQuery.subquery(Reservation.class);
 				List<Predicate> predicates = new ArrayList<>();
 				if (data != null && !data.isEmpty()) {
 					for (Map.Entry<String, String> filterData : data.entrySet()) {
@@ -115,24 +115,15 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 								predicates.add(criteriaBuilder.and(
 										criteriaBuilder.equal(pickUpPlace.get("placeName"), filterData.getValue())));
 							}
-							if (filterData.getKey().equals("startDateTime")) {
-								try {
-									predicates.add(criteriaBuilder.and(criteriaBuilder.equal(user.get("startDateTime"),
-											converDate(filterData.getValue()))));
-								} catch (ParseException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
-							if (filterData.getKey().equals("endDateTime")) {
-								try {
-									predicates.add(criteriaBuilder.and(criteriaBuilder.equal(user.get("endDateTime"),
-											converDate(filterData.getValue()))));
-								} catch (ParseException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								}
-							}
+							/*
+							 * if (filterData.getKey().equals("startDateTime")) { try { predicates
+							 * .add(criteriaBuilder.and(criteriaBuilder.lessThan(user.get("startDateTime"),
+							 * convertDate(data.get("endDateTime"))))); } catch (ParseException e) {
+							 * e.printStackTrace(); } } if (filterData.getKey().equals("endDateTime")) { try
+							 * { predicates.add(criteriaBuilder.and(criteriaBuilder.lessThan(user.get(
+							 * "endDateTime"), convertDate(data.get("startDateTime"))))); } catch
+							 * (ParseException e) { e.printStackTrace(); } }
+							 */
 							if (filterData.getKey().equals("minAmount")) {
 								predicates.add(criteriaBuilder.and(criteriaBuilder
 										.greaterThanOrEqualTo(user.get("amount"), filterData.getValue())));
@@ -172,6 +163,10 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 						}
 					}
 				}
+				if (availableCars != null && !availableCars.isEmpty()) {
+					final Path<?> group = root.get("id");
+					predicates.add(criteriaBuilder.and(group.in(availableCars)));
+				}
 				return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
 			}
 		}, pageable);
@@ -183,11 +178,16 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 			+ " < :distance ORDER BY " + HAVERSINE_PART + " DESC")
 	List<Car> searchByCoordinates(Double latitude, Double longitude, Double distance, Pageable pageable);
 
-	default LocalDate converDate(String providedStringDate) throws ParseException {
+	@Query(value = "select id from car where car.serial_number not in (select r.serial_number from reservation r where r.start_date_time <= :endDateTime"
+			+ " AND r.end_date_time >= :startDateTime)", nativeQuery = true)
+	List<Long> getAvailableCar(String startDateTime, String endDateTime);
 
-		DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate ld = LocalDate.parse(providedStringDate, DATEFORMATTER);
-		System.out.println(ld);
-		return ld;
-	}
+	/*
+	 * default LocalDate convertDate(String providedStringDate) throws
+	 * ParseException {
+	 * 
+	 * DateTimeFormatter DATEFORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	 * LocalDate ld = LocalDate.parse(providedStringDate, DATEFORMATTER);
+	 * System.out.println(ld); return ld; }
+	 */
 }

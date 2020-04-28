@@ -2,7 +2,6 @@ package com.car.rentservice.service.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -441,7 +440,9 @@ public class ilCarroServiceImpl implements ilCarroService {
 	public ResponseModel searchCar(Map<String, String> data, Pageable pageable) {
 		ResponseModel responseModel = new ResponseModel();
 		try {
-			Page<Car> carList = carRepository.searchCar(data, pageable);
+			List<Long> availableCars = carRepository.getAvailableCar(data.get("startDateTime"),
+					data.get("endDateTime"));
+			Page<Car> carList = carRepository.searchCar(data, availableCars, pageable);
 			if (carList != null && !carList.isEmpty()) {
 				responseModel.setStatus(HttpStatus.OK.toString());
 				responseModel.setMessage("Cars found");
