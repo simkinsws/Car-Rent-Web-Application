@@ -440,8 +440,10 @@ public class ilCarroServiceImpl implements ilCarroService {
 	public ResponseModel searchCar(Map<String, String> data, Pageable pageable) {
 		ResponseModel responseModel = new ResponseModel();
 		try {
-			List<Long> availableCars = carRepository.getAvailableCar(data.get("startDateTime"),
-					data.get("endDateTime"));
+			List<Long> availableCars = null;
+			if (data.get("startDateTime") != null && data.get("endDateTime") != null) {
+				availableCars = carRepository.getAvailableCar(data.get("startDateTime"), data.get("endDateTime"));
+			}
 			Page<Car> carList = carRepository.searchCar(data, availableCars, pageable);
 			if (carList != null && !carList.isEmpty()) {
 				responseModel.setStatus(HttpStatus.OK.toString());

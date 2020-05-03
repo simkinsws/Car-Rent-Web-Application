@@ -126,11 +126,11 @@ public interface CarRepository extends JpaRepository<Car, Long>, JpaSpecificatio
 							 */
 							if (filterData.getKey().equals("minAmount")) {
 								predicates.add(criteriaBuilder.and(criteriaBuilder
-										.greaterThanOrEqualTo(user.get("amount"), filterData.getValue())));
+										.greaterThanOrEqualTo(root.get("pricePerDay"), filterData.getValue())));
 							}
 							if (filterData.getKey().equals("maxAmount")) {
 								predicates.add(criteriaBuilder.and(
-										criteriaBuilder.lessThanOrEqualTo(user.get("amount"), filterData.getValue())));
+										criteriaBuilder.lessThanOrEqualTo(root.get("pricePerDay"), filterData.getValue())));
 							}
 							if (filterData.getKey().equals("latitude")) {
 								predicates.add(criteriaBuilder.and(
