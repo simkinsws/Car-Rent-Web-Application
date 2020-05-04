@@ -1,0 +1,305 @@
+<!--<section class="welcome-to find-car">-->
+<!--  <div class="form-wrapper search-form form-find-car">-->
+<!--    <div class="form-title d-block w-100">-->
+<!--      <h1 class=" m-0">Add your car</h1>-->
+<!--      <p class="m-0">Type your data and hit Submit!</p>-->
+<!--    </div>-->
+<!--    <form (ngSubmit)="onSubmit()" #addCarForm="ngForm" class="d-block w-100">-->
+<!--      <div class="row">-->
+<!--        <div class="col-12 mx-auto">-->
+<!--          <p class="m-0">Location</p>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Country</span>-->
+<!--            </div>-->
+<!--            <input type="text" required id="country"-->
+<!--                   name="country"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Street</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="street"-->
+<!--                   name="street"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">City</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="city"-->
+<!--                   name="city"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">State/Region/Province</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="state"-->
+<!--                   name="state"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">ZIP</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="zip"-->
+<!--                   name="street"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <br>-->
+<!--          <p class="m-0">Car Details</p>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Serial Number</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="serialNumber"-->
+<!--                   name="serialNumber"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Make</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="make"-->
+<!--                   name="make"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Model</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="model"-->
+<!--                   name="model"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Year</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="year"-->
+<!--                   name="year"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Engine</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="engine"-->
+<!--                   name="engine"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Fuel</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="fuel"-->
+<!--                   name="fuel"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Transmission</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="transmission"-->
+<!--                   name="transmission"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">WD</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="wd"-->
+<!--                   name="wd"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Horsepower</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="horsepower"-->
+<!--                   name="horsepower"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Torque</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="torque"-->
+<!--                   name="torque"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Doors</span>-->
+<!--            </div>-->
+<!--            <input type="number" id="doors"-->
+<!--                   name="doors"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Seats</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="seats"-->
+<!--                   name="seats"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Car Class</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="class"-->
+<!--                   name="class"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Fuel consumption</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="fuelcon"-->
+<!--                   name="fuelcon"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Image Url</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="imageurl"-->
+<!--                   name="imageurl"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <br>-->
+<!--          <br>-->
+<!--          <br>-->
+<!--          <p class="m-0">About</p>-->
+<!--          <div class="input-group mb-6">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">About</span>-->
+<!--            </div>-->
+<!--            <textarea type="text" id="about"-->
+<!--                   name="about"-->
+<!--                   class="form-control">-->
+<!--            </textarea>-->
+<!--          </div>-->
+<!--          <br>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Features</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="features"-->
+<!--                   name="features"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <br>-->
+<!--          <div class="input-group mb-3">-->
+<!--            <div class="input-group-prepend">-->
+<!--              <span class="input-group-text">Price Per Day</span>-->
+<!--            </div>-->
+<!--            <input type="text" id="price"-->
+<!--                   name="price"-->
+<!--                   class="form-control">-->
+<!--          </div>-->
+<!--          <br>-->
+<!--          <button type="submit" [disabled]="!addCarForm.form.valid" class="btn btn-red btn-yalla">Submit</button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </form>-->
+<!--    <span class="skewed-red-border"></span>-->
+<!--  </div>-->
+<!--</section>-->
+<section>
+      <div class="form-wrapper search-form form-find-car">
+        <div class="form-title d-block w-100">
+          <h1 class=" m-0">Add your car</h1>
+          <p class="m-0">Type your data and hit Submit!</p>
+        </div>
+        <br>
+<!--        <form (ngSubmit)="onSubmit(formGroup)" [formGroup]="formGroup">-->
+
+        <mat-horizontal-stepper [linear]="true">
+          <!-- Location Stepper. -->
+        <mat-step [stepControl]="formGroup">
+        <form [formGroup]="formGroup">
+          <ng-template matStepLabel>Location</ng-template>
+          <mat-form-field>
+            <input type="text" placeholder="Select City" aria-label="Select City" matInput
+              [formControl]="placeControl" [matAutocomplete]="auto" [(ngModel)]="placeValue" required>
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFnPlace">
+                <mat-option *ngFor="let place of filteredPlaceOptions | async" [value]="place">
+                  {{place.city}}
+                </mat-option>
+              </mat-autocomplete>
+            <button matSuffix mat-raised-button color="warn" (click)="addPlaceName(placeValue)">Add Tag</button>
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <mat-label>Street</mat-label>
+            <input matInput placeholder="Street" aria-label="Street">
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>State / Region / Province</mat-label>
+            <mat-select>
+              <mat-option *ngFor="let option of states" [value]="option">
+                {{option}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field class="example-full-width">
+            <mat-label>ZIP</mat-label>
+            <input matInput placeholder="Ex. 42823" aria-label="ZIP">
+          </mat-form-field>
+
+          <div>
+            <button mat-button matStepperNext [disabled]="!formGroup.controls.placeControl.valid">Next</button>
+          </div>
+        </form>
+        </mat-step>
+
+<!--           next step-->
+          <mat-step [stepControl]="formGroupNext">
+            <form [formGroup]="formGroupNext">
+              <ng-template matStepLabel>Car Details</ng-template>
+              <mat-form-field>
+                <input type="text" placeholder="Select Make" aria-label="Select Make" matInput
+                       [formControl]="makeControl" [matAutocomplete]="auto1" [(ngModel)]="makeValue" required>
+                <mat-autocomplete #auto1="matAutocomplete" [displayWith]="displayFn">
+                  <mat-option *ngFor="let option of filteredMakeOptions | async" [value]="option">
+                    {{option.make}}
+                  </mat-option>
+                </mat-autocomplete>
+                <button matSuffix mat-raised-button color="warn" (click)="addMake(makeValue)">Add Tag</button>
+              </mat-form-field>
+
+              <mat-form-field>
+                <input type="text" placeholder="Select Model" aria-label="Select Model" matInput
+                       [formControl]="modelControl" [matAutocomplete]="auto2" [(ngModel)]="modelValue" required>
+                <mat-autocomplete #auto2="matAutocomplete" [displayWith]="displayFnModel">
+                  <mat-option *ngFor="let option of filteredModelOptions | async" [value]="option">
+                    {{option.model}}
+                  </mat-option>
+                </mat-autocomplete>
+                <button matSuffix mat-raised-button color="warn" (click)="addModel(modelValue)">Add Tag</button>
+              </mat-form-field>
+
+              <mat-form-field>
+                <input type="text" placeholder="Select Year" aria-label="Select Year" matInput
+                       [formControl]="yearControl" [matAutocomplete]="auto3" [(ngModel)]="yearValue" required>
+                <mat-autocomplete #auto3="matAutocomplete" [displayWith]="displayFnYear">
+                  <mat-option *ngFor="let option of filteredYearOptions | async" [value]="option">
+                    {{option.year}}
+                  </mat-option>
+                </mat-autocomplete>
+                <button matSuffix mat-raised-button color="warn" (click)="addYear(yearValue)">Add Tag</button>
+              </mat-form-field>
+              <div>
+                <button mat-button mat-raised-button type="submit" [disabled]="!formGroupNext.valid" class="btn btn-red">Submit</button>
+              </div>
+            </form>
+          </mat-step>
+        </mat-horizontal-stepper>
+      </div>
+</section>
